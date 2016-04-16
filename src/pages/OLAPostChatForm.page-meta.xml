@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>36.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>This is a Post Chat form which collects the visitor&apos;s feedback about the Chat session and posts it back to Salesforce on Submit. This Page will be hosted on a public force.com site.</description>
+    <label>OLAPostChatForm</label>
+</ApexPage>

@@ -1,0 +1,155 @@
+<apex:page controller="smagicinteract.BulkSMSController" tabStyle="SM_Home__tab"  >
+<apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+<apex:includeScript value="{!$Resource.smagicinteract__BulkSMSJS}"/>
+<script type="text/javascript">
+    
+    function charaterCounter(){
+        var maxLimit = 700;
+        var txtField = document.getElementById("{!$Component.formId.main.textSection.SMSText}");
+        var currentCount =  txtField.value.length;
+        var remainingCharMsgDiv = document.getElementById("{!$Component.formId.main.textSection.charaterCountMsg.numberOfChars}");
+        var noOfCharMsg = remainingCharMsgDiv.innerHTML;
+        var remaingChars = 700;
+        var msg = "";
+        if(currentCount > maxLimit){
+            txtField.value = txtField.value.substring(0, maxLimit);
+            remaingChars = 0; 
+        }
+        else{
+            remaingChars = maxLimit - currentCount;
+        }
+        msg = "You can type maximum "+remaingChars+" characters.";
+        if(remaingChars == 0)
+            msg = "You have reached to the maximum charater limit of 700.";
+        remainingCharMsgDiv.innerHTML = msg;
+    }
+</script>
+
+<style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #000000;
+            z-index: 9999;
+            padding:10px;
+            position: absolute;
+            width: 350px;
+            left:40%;
+            top:250px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+</style>
+ 
+<c:Expired_Message_Component isPanelVisible="{! NOT(isVisible) }"/>
+
+<apex:outputPanel rendered="{!isVisible}" > 
+ 
+<apex:outputPanel rendered="{!If(isVisible && NOT(isSendSMSAllowable) ,true,false)}"> 
+ <div style="width:700px;margin:20px auto; text-align:center;line-height:40px;" > 
+        <h1 style="font-size:30px;">Your SMS Magic subscription is Starter. </h1> <br/> 
+        <h5 style="font-size:15px;"> This package does not have privilege to send sms on objects other than Lead and Contact .    </h5> <br/>            
+  </div>
+</apex:outputPanel>
+
+<apex:form id="formId">
+<apex:pageMessages id="pageMessagesSection" rendered="{!isVisible}"/><br/>
+<apex:pageBlock id="main" title="Compose New SMS for Selected Contacts" helpTitle="Help For this Page?" helpUrl="/apex/SMSMagicHelp?from=BulkSendSMS"  rendered="{! isSendSMSAllowable }">
+
+<apex:outputPanel styleClass="popupBackground" rendered="{!isConfigurationDone}" />
+<apex:outputPanel styleClass="custPopup" layout="block" rendered="{!isConfigurationDone}"  >
+<div id="popupMessageHeader" style="width:100%; height:10%; background-color:#8BBEC1;">
+       <div title="" style="color:white; text-align:left; font-family:sans-serif; font-weight:bold; vertical-align: middle; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;"> Configure SMS Magic  </div> 
+</div> 
+       <br /><br />
+       <apex:outputPanel style="font-size:15px;">
+You have not done mandatory Configuration . Please get it done if you want to use SMS Magic. <br/><br/><br/><br/>
+       </apex:outputPanel>
+       <apex:outputPanel style="margin-left:40%">
+                <apex:commandButton title="OK" value="  OK  " action="{!openSetUpWizard}"/>
+       </apex:outputPanel>
+</apex:outputPanel>
+
+<apex:pageBlockSection id="sectionSenderId" title="Sender Id" rendered="{!isRegistered}">
+    <apex:selectList size="1"  value="{!senderId}">
+    <apex:selectOptions value="{!senderIds}"/>
+    </apex:selectList>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection id="sectionSenderName" title="Users" rendered="{!showUserDropDown}">
+    <apex:selectList size="1"  value="{!userId}" title="Choose Sender" style="max-width:150px; width:150px;">
+    <apex:selectOptions value="{!senderList}" />
+    </apex:selectList>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection id="RecipientsList" columns="2" title="Selected Numbers" rendered="{!isRegistered}">    
+    <apex:pageBlockTable value="{!smsObjects}" var="item" id="smslist">
+        <apex:column value="{!item.name}"> 
+            <apex:facet name="header">Name</apex:facet>
+        </apex:column>
+        
+        <apex:column value="{!item.mobilenumber}"> 
+            <apex:facet name="header">PhoneNumber</apex:facet>
+        </apex:column>
+        
+        <apex:column value="{!item.objectType}"> 
+            <apex:facet name="header">Object Type</apex:facet>
+        </apex:column>
+        
+        <apex:column id="removeButtonCol">
+            <apex:facet name="header">Remove</apex:facet>
+            <apex:image value="{!imageUrl}" title="Remove"  />
+ 
+             <apex:actionSupport rerender="formId" action="{!removeRecord}" event="onclick" immediate="true">
+               <apex:param name="smsexternaluniqueid" value="{!item.externalId}" assignTo="{!itemIdForRemoval}"/>
+            </apex:actionSupport>
+        </apex:column>
+
+    </apex:pageBlockTable>
+</apex:pageBlockSection>  
+
+
+<apex:pageBlockSection title="Use Templates" rendered="{!isRegistered}">
+    <apex:selectList value="{!template}" size="1" title="Choose a template" onchange="changeTemplate();" style="max-width:150px;width:150px;"> 
+        <apex:selectOptions value="{!items}"/>
+    </apex:selectList>
+</apex:pageBlockSection>
+
+<apex:actionFunction name="changeTemplate" action="{!changeTemplateText}" rerender="textSection" oncomplete="charaterCounter();"/>
+
+<apex:pageBlockSection id="textSection" columns="2" title="SMS Text" rendered="{!isRegistered}">  
+    <apex:pageBlockSectionItem id="charaterCountMsg" >
+        <apex:outputText style="color:green;font-size:14px;" id="numberOfChars" value="You can type maximum 700 characters."></apex:outputText> 
+    </apex:pageBlockSectionItem>
+    <br/>
+    <apex:inputTextArea id="SMSText"  style="width:400px;height:80px;" value="{!smsText}" onkeyup="charaterCounter();" />
+</apex:pageBlockSection>
+
+<apex:pageBlockSection id="optOut" columns="2" title="Send to Optout members" rendered="{!showOptoutSection}">
+    <apex:selectList id="optOutList" value="{!optOutFieldValue}" size="1" rendered="{!showOptoutSection}" title="Send to optout members" >
+        <apex:selectOptions value="{!optOutList}"/>
+    </apex:selectList>
+</apex:pageBlockSection>
+
+<apex:pageBlockButtons id="buttonsBlock">
+    <apex:commandButton id="Send" action="{!send}" value="Send" title="Send" rendered="{!isRegistered}" disabled="{!IF (disableMe,true, false)}" />
+    <apex:commandButton id="Cancel" action="{!cancel}" rendered="{!isRegistered}" value="Cancel" title="Cancel" />
+</apex:pageBlockButtons>
+
+</apex:pageBlock>
+</apex:form>
+
+</apex:outputPanel>
+</apex:page>

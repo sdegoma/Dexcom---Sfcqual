@@ -1,0 +1,118 @@
+<apex:page showHeader="false" standardController="Survey__c" extensions="CS_SurveyCX,CS_FormTextUtil" id="pageId">
+    <apex:messages />
+    <!-- OLA Post Chat Form -->
+    <apex:form id="formId">
+         <!-- Dexcom One Step Ahead Logo -->
+        <body>
+        <div id="wrapper">
+        <apex:image value="{!$Resource.DexcomOneStepAhead}"  />
+        </div><br/>
+        
+        
+        <div id="container">
+        <!-- Error Panel when chat key is undefined -->        
+        <apex:outputPanel id="errorPanelId" style="display: none;">
+            <p>{!errorMsg}</p>
+        </apex:outputPanel>  
+        
+        <!-- Survey Panel -->
+        <apex:outputPanel id="panelId" style="">
+            <p>
+                Thank you for using Dexcom chat. How would you rate your experience today?
+                <apex:inputField value="{!surveyObj.Rating__c}"/>
+            </p>
+            <br/>
+            <apex:commandButton action="{!setValues}" value="Submit" oncomplete="window.close();"/>
+            <apex:commandButton onclick="window.close();" value="Close"/>
+        </apex:outputPanel>
+       </div>
+       
+       <div id="footer"> 
+        <apex:outputPanel >
+            <!-- Terms and Conditions-->
+            <apex:outputText value="{!formTextObj.Terms_And_Conditions__c}" escape="false"/>
+        </apex:outputPanel>
+        </div>
+      </body> 
+    </apex:form>
+    
+<script>
+    <!-- Onload function call for chat key check -->
+    chatKeyCheck({!$CurrentPage.parameters.chatKey});
+    
+    <!-- Hide show panels for survey and error message -->
+    function chatKeyCheck(chatKeyVal) {
+        if(chatKeyVal != undefined) {
+            document.getElementById('pageId:formId:panelId').style.display = 'block';
+            document.getElementById('pageId:formId:errorPanelId').style.display = 'none';
+        } else {
+            document.getElementById('pageId:formId:panelId').style.display = 'none';
+            document.getElementById('pageId:formId:errorPanelId').style.display = 'block';
+        }
+    }
+</script>
+
+<style type="text/css">
+/*#formPanel {
+    letter-spacing: 0.5px; 
+    padding-left: 10px;
+}
+
+#footer {
+ font-family: Verdana, Geneva, sans-serif;
+ font-size: 0.7em;
+ font-weight: bold;
+ color: #FFF;
+ background-color: #666;
+ padding: 10px;
+ margin: 20px;
+ height: auto;
+ width: 90%;
+} */
+
+#formPanel {
+    letter-spacing: 0.5px; 
+    padding-left: 10px;
+    margin:10px;
+}
+
+#body {
+   margin:10px;
+   padding:10px;
+   height:100%;
+}
+#container {
+   min-height:100%;
+   position:relative;
+   letter-spacing: 0.5px; 
+   padding-left: 10px;
+   margin:10px;
+}
+#header {
+   
+   padding:10px;
+}
+#body {
+   padding:10px;
+   padding-bottom:170px;   /* Height of the footer */
+   letter-spacing: 0.5px; 
+   padding-left: 10px;
+}
+#footer {
+   position:absolute;
+   bottom:0;
+   width:auto;
+   height:170px;   /* Height of the footer */
+   font-weight: bold;
+   color: #FFF;
+   background-color: #666;
+   padding: 10px;
+   margin: 20px;
+   font-size: 0.8em;
+   font-style: italic;
+}
+
+</style>
+
+
+</apex:page>

@@ -1,0 +1,327 @@
+<apex:page standardController="Territory_Targeting_Metrics_MVN__c" extensions="TerritoryTargetingControllerMVN" showHeader="true" sidebar="true" title="Territory Targeting">
+<apex:includeScript value="{!URLFOR($Resource.jquery)}"/>
+<apex:includeScript value="{!URLFOR($Resource.bootstrap, 'bootstrap/js/bootstrap.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.datatables, 'media/js/jquery.dataTables.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.datatables, 'media/css/jquery.dataTables.css')}" />
+<script>
+var table;
+
+$(document).ready(function() {
+    table = $('table[id="targetTable"]').dataTable({
+    	"paging" : true,
+    	"pageLength": 25,
+    	"lengthChange": false,
+    	"stateSave" : true,
+    	"fnDrawCallback": function (o) {
+            showAllReasonFields();
+        },
+        "columnDefs": [
+            {
+           		"targets": [ 5, 9 ],
+                orderable: false
+          	},
+      	]
+    });
+
+    table.find("tbody").attr("style", "")
+
+    var callsPerMonth = $('span[id$="callsPerMonth"]');
+    var callsPerMonthGoal = $('span[id$="callsPerMonthGoal"]');
+    var label = $(callsPerMonth).parent().prev("th");
+
+    if(parseInt(callsPerMonth.text()) >= parseInt(callsPerMonthGoal.text())){
+    	callsPerMonth.css({'color'  : 'green', 'font-weight' : 'bold'});
+    	label.css({'color'  : 'green'})
+    } else {
+    	callsPerMonth.css({'color'  : 'red', 'font-weight' : 'bold'});
+    	label.css({'color'  : 'red'})
+    }
+
+    showAllReasonFields();
+} );
+
+function bindNewWindowClick(){
+    jQuery(".createDCR").each(function(){
+        jQuery(this).on('click', function(event) { 
+            event.preventDefault();
+            window.open(jQuery(this).closest("a").attr("href"), "popupWindow" + Math.floor((Math.random()*100)+1), "");
+        });
+    });
+}
+
+function showReasonColumn(recordId){
+	var selectedRating = $('#selectedRating-'+recordId).find('select').length ? $('#selectedRating-'+recordId).find('select').val().trim() : $('#selectedRating-'+recordId).text().trim();
+	var suggestedRating = $('#suggestedRating-'+recordId).text().trim();
+	if(selectedRating != suggestedRating){
+		$('#reason-'+recordId).find('select').show();
+	} else{
+		$('#reason-'+recordId).find('select').hide();
+	}
+}
+
+function showAllReasonFields(){
+	var selectedRatings = $("td[id^='selectedRating']");
+
+	selectedRatings.each(function(){
+		var recordId = this.id.substring(this.id.indexOf("-")+1);
+
+		var suggestedRating = $('#suggestedRating-'+recordId).text().trim();
+		var reason = $('#reason-'+recordId).find('select');
+		var selectedRating = $(this).find('select').length ? $(this).find('select').val().trim() : $(this).text().trim() ;
+		if(selectedRating != suggestedRating){
+			reason.show();
+		} else{
+			reason.hide();
+		}
+	});
+}
+
+function checkReasonFields(){
+	var error = false;
+	$(table.fnGetNodes()).each(function(){
+		var selectedRating = $(this).find("td[id^='selectedRating']").find('select').val();
+		var suggestedRating = $(this).find("td[id^='suggestedRating']").text().trim();
+		var reason = $(this).find("td[id^='reason']").find('select').val().trim();
+
+		if(selectedRating != suggestedRating && reason == ''){
+			alert("Please provide a reason when a selected rating is different from the suggested rating.");
+			error = true;
+			return;
+		}
+	});
+
+	if(!error){
+		submitTargets();
+	}
+}
+
+</script>
+<style>
+.tableWrapper{
+    margin-bottom:20px;
+    padding: 7px;
+}
+.label{
+    font-weight: bold;
+}
+.buttonWrapper{
+    text-decoration: none;
+}
+.buttonWrapper:link{
+    text-decoration: none;
+}
+.bottonWrapper > .btn{
+    width: 64px;
+}
+</style>
+
+<style>
+.compact {
+	font-size: 12px;
+}
+
+.styled-table {
+	margin:0px;padding:0px;
+	width:65%;
+	border:1px solid #ffffff;
+	
+	-moz-border-radius-bottomleft:0px;
+	-webkit-border-bottom-left-radius:0px;
+	border-bottom-left-radius:0px;
+	
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-bottom-right-radius:0px;
+	
+	-moz-border-radius-topright:0px;
+	-webkit-border-top-right-radius:0px;
+	border-top-right-radius:0px;
+	
+	-moz-border-radius-topleft:0px;
+	-webkit-border-top-left-radius:0px;
+	border-top-left-radius:0px;
+}.styled-table table{
+    border-collapse: collapse;
+        border-spacing: 0;
+	width:85%;
+	height:100%;
+	margin:0px;padding:0px;
+}.styled-table tr:last-child td:last-child {
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-bottom-right-radius:0px;
+}
+.styled-table table tr:first-child td:first-child {
+	-moz-border-radius-topleft:0px;
+	-webkit-border-top-left-radius:0px;
+	border-top-left-radius:0px;
+}
+.styled-table .bold {
+	font-weight: bold;
+}
+.styled-table table tr:first-child td:last-child {
+	-moz-border-radius-topright:0px;
+	-webkit-border-top-right-radius:0px;
+	border-top-right-radius:0px;
+}.styled-table tr:last-child td:first-child{
+	-moz-border-radius-bottomleft:0px;
+	-webkit-border-bottom-left-radius:0px;
+	border-bottom-left-radius:0px;
+}.styled-table tr:hover td{
+	
+}
+.styled-table tr:nth-child(odd){ background-color:#ffffff; }
+.styled-table tr:nth-child(even)    { background-color:#ffffff; }.styled-table td{
+	vertical-align:middle;
+	
+	
+	border:1px solid #ffffff;
+	border-width:0px 1px 1px 0px;
+	text-align:left;
+	padding:5px;
+	font-size:12px;
+	font-family:Arial;
+	font-weight:normal;
+	color:#000000;
+}.styled-table tr:last-child td{
+	border-width:0px 1px 0px 0px;
+}.styled-table tr td:last-child{
+	border-width:0px 0px 1px 0px;
+}.styled-table tr:last-child td:last-child{
+	border-width:0px 0px 0px 0px;
+}
+.styled-table tr:first-child td{
+		background:-o-linear-gradient(bottom, #7C435D 5%, #7C435D 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #7C435D), color-stop(1, #7C435D) );
+	background:-moz-linear-gradient( center top, #7C435D 5%, #7C435D 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#7C435D", endColorstr="#7C435D");	background: -o-linear-gradient(top,#7C435D,7C435D);
+
+	background-color:#7C435D;
+	border:0px solid #ffffff;
+	text-align:center;
+	border-width:0px 0px 1px 1px;
+	font-size:12px;
+	font-family:Arial;
+	font-weight:bold;
+	color:#ffffff;
+}
+.styled-table tr:first-child:hover td{
+	background:-o-linear-gradient(bottom, #7C435D 5%, #7C435D 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #7C435D), color-stop(1, #7C435D) );
+	background:-moz-linear-gradient( center top, #7C435D 5%, #7C435D 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#7C435D", endColorstr="#7C435D");	background: -o-linear-gradient(top,#7C435D,7C435D);
+
+	background-color:#7C435D;
+}
+.styled-table tr:first-child td:first-child{
+	border-width:0px 0px 1px 0px;
+}
+.styled-table tr:first-child td:last-child{
+	border-width:0px 0px 1px 1px;
+}
+
+span.required > select{
+	border-color: red;
+}
+</style>
+	<apex:form >
+	<apex:pageBlock title="{!$Label.Targeting_Territory_Targeting_Metrics}">
+		<apex:pageBlockSection title="Details" collapsible="false" columns="2">
+			
+			<apex:inputField value="{!metric.Territory__c}"/>
+			<apex:outputField value="{!metric.Selected_Targets__c}"/>
+
+			<apex:outputField value="{!metric.Territory_Name__c}"/>
+			<apex:outputField value="{!metric.Calls_Per_Month_Targets__c}" id="callsPerMonth"/>
+		
+			<apex:inputField value="{!metric.OwnerId}" rendered="{!isAdmin}"/>
+			<apex:outputField value="{!metric.Owner.Name}" rendered="{!!isAdmin}"/>
+			<apex:outputField value="{!metric.Calls_Per_Month_Goals__c}" id="callsPerMonthGoal"/>
+
+			<apex:outputField value="{!metric.Insulin_Market_Coverage__c}"/>
+			<apex:outputField value="{!metric.Remaining_Calls_to_Goal__c}"/>
+			<apex:outputField value="{!metric.Preselects_Untargeted__c}"/>
+			
+		</apex:pageBlockSection>
+		<apex:pageBlockSection columns="1" title="{!$Label.Targeting_Territory_Rating_Data}" collapsible="false">
+			<table class="styled-table">
+				<tr>
+					<td>{!$Label.Targeting_Dexcom_Rating}</td>
+					<td>{!$Label.Targeting_Starting_Rating_Count}</td>
+					<td>{!$Label.Targeting_Deselected}</td>
+					<td>{!$Label.Targeting_Selected}</td>
+					<td>{!$Label.Targeting_Final_Rating_Count}</td>
+				</tr>
+				<tr>
+					<td class="bold">A-3</td>
+					<td>{!metric.A_Starting_Tier_Count__c}</td>
+					<td>{!metric.A_Deselected__c}</td>
+					<td>{!metric.A_Selected__c}</td>
+					<td>{!metric.A_Final_Tier_Counts__c}</td>
+				</tr>
+				<tr>
+					<td class="bold">B-2</td>
+					<td>{!metric.B_Starting_Tier_Count__c}</td>
+					<td>{!metric.B_Deselected__c}</td>
+					<td>{!metric.B_Selected__c}</td>
+					<td>{!metric.B_Final_Tier_Counts__c}</td>
+				</tr>
+				<tr>
+					<td class="bold">C-1</td>
+					<td>{!metric.C_Starting_Tier_Count__c}</td>
+					<td>{!metric.C_Deselected__c}</td>
+					<td>{!metric.C_Selected__c}</td>
+					<td>{!metric.C_Final_Tier_Counts__c}</td>
+				</tr>
+				<tr>
+					<td class="bold">D-0</td>
+					<td>{!metric.D_Starting_Tier_Count__c}</td>
+					<td>{!metric.D_Deselected__c}</td>
+					<td>{!metric.D_Selected__c}</td>
+					<td>{!metric.D_Final_Tier_Counts__c}</td>
+				</tr>
+			</table>
+		</apex:pageBlockSection>
+	</apex:pageBlock>
+	
+	<apex:actionFunction action="{!submitTargets}" name="submitTargets"/>
+	<apex:pageBlock >
+		<apex:pageBlockButtons >
+	        <apex:commandButton onclick="checkReasonFields();" value="Submit" rerender="rerenderPanel"/>
+	    </apex:pageBlockButtons>
+	    <table class="compact" id="targetTable">
+	    	<thead>
+	            <tr>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Name__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Party_ID__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Rank__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Primary_Specialty__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Mailing_Address__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Selected_Tier__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Suggested_Tier__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Insulin_Decile__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Dexcom_Decile__c.Label}</th>
+	                <th>{!$ObjectType.Territory_Targets__c.fields.Reason__c.Label}</th>
+	            </tr>
+	        </thead>
+
+	        <tbody style="display:none">
+	        	<apex:repeat value="{!targets}" var="target">
+				<tr>
+					<td><apex:outputField value="{!target.Name__c}"/></td>
+					<td><apex:outputField value="{!target.Party_ID__c}"/></td>
+					<td><apex:outputField value="{!target.Rank__c}"/></td>
+					<td><apex:outputField value="{!target.Primary_Specialty__c}"/></td>
+					<td><apex:outputField value="{!target.Mailing_Address__c}"/></td>
+					<td id="selectedRating-{!target.Id}"><apex:inputField value="{!target.Selected_Tier__c}" onchange="showReasonColumn('{!target.Id}');"/></td>
+					<td id="suggestedRating-{!target.Id}"><apex:outputField value="{!target.Suggested_Tier__c}"/></td>
+					<td><apex:outputField value="{!target.Insulin_Decile__c}"/></td>
+					<td><apex:outputField value="{!target.Dexcom_Decile__c}"/></td>
+					<td id="reason-{!target.Id}"><span class="required"><apex:inputField value="{!target.Reason__c}"/></span></td>
+				</tr>
+				</apex:repeat>
+			</tbody>
+		</table>
+	</apex:pageBlock>
+	<apex:outputPanel id="rerenderPanel">
+	</apex:outputPanel>
+	</apex:form>
+</apex:page>

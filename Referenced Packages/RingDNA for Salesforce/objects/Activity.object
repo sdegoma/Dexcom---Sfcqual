@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Abandoned_Call__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>This checkbox will be checked if a caller hangs up prior to the call being answered from a queue. The caller abandoned call prior to being connected</description>
+        <externalId>false</externalId>
+        <label>Abandoned Call</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Automated_Voicemail_Used__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>This is the Automated Voicemail that was left during the outbound call</inlineHelpText>
+        <label>Automated Voicemail Used</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Automated_Voicemail__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked this indicates that an Automated Voicemail was left during the outbound call</inlineHelpText>
+        <label>Automated Voicemail?</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Call_Connected__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( ISPICKVAL( Call_Disposition__c , &quot;Contacted&quot;) , TRUE, IF( Call_Duration__c &gt; 90,TRUE,FALSE ))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Call Connected?</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Call_Direction__c</fullName>
+        <deprecated>false</deprecated>
+        <description>This is the direction of the RingDNA call.</description>
+        <externalId>false</externalId>
+        <label>Call Direction</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Inbound</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Outbound</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Call_Disposition__c</fullName>
+        <deprecated>false</deprecated>
+        <description>This describes the outcome of a call</description>
+        <externalId>false</externalId>
+        <label>Call Disposition</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Wrong Number</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Left Voicemail</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Contacted</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Set Appointment</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>DO NOT CALL</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Call_Duration__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Call duration measured in seconds</description>
+        <externalId>false</externalId>
+        <label>Call Duration</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Call_Duration_min__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Call duration measured in minutes</description>
+        <externalId>false</externalId>
+        <formula>Call_Duration__c / 60</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Call Duration (min)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Call_Hour_Of_Day_Local__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Call Hour Of Day (Local)</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Call_Rating__c</fullName>
+        <deprecated>false</deprecated>
+        <description>1 is low 5 is high</description>
+        <externalId>false</externalId>
+        <label>Call Rating</label>
+        <precision>1</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Call_Recording_URL__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Call Recording URL</label>
+        <required>false</required>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>Call_Recording__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( ISBLANK( Call_Recording_URL__c ) , &quot;&quot;, HYPERLINK( Call_Recording_URL__c , &quot;Listen&quot;) )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Call Recording</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Called_Back__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Indicates the person called back. Generally linked to the use of Local Presence or Automated Voicemail</description>
+        <externalId>false</externalId>
+        <label>Called Back?</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Created_by_RingDNA__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Created by RingDNA</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Local_Presence_Num__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>This is the Local Presence number that was used to place the outbound call</inlineHelpText>
+        <label>Local Presence #</label>
+        <required>false</required>
+        <type>Phone</type>
+    </fields>
+    <fields>
+        <fullName>Local_Presence__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked this indicates that Local Presence was used to make the outbound call</inlineHelpText>
+        <label>Local Presence?</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Queue_Hold_Time__c</fullName>
+        <deprecated>false</deprecated>
+        <description>The amount of time a call has been in the queue before being picked up by and agent. It is measured in seconds</description>
+        <externalId>false</externalId>
+        <label>Queue Hold Time</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Queue__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Queue</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Supervisor_Notes__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Supervisor Notes</label>
+        <required>false</required>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Voicemail__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked this indicates that this call activity was created as the result of an inbound call that went to VM</inlineHelpText>
+        <label>Voicemail</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

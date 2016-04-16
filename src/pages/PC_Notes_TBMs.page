@@ -1,0 +1,78 @@
+<apex:page standardController="Account" extensions="PC_Notes_Only">
+ <apex:form >
+  
+      <apex:pageBlock title="Patient Care Notes">
+      
+        <apex:pageBlockButtons location="top">
+                    <!-- apex:commandButton  value="New Note" action="{!URLFOR($Action.Activity.LogCall)}" / -->
+                    
+<!---  New Note Link  
+<a href="/apex/EditTaskPage?tsk1={!$User.Id}&RecordType=01240000000UZKP&OppID={!AccRecId}&retURL=%2F{!AccRecId}&ent=Task" value="New Note" id="theCommandLink" target="_parent">New Note</a>  
+ -->
+
+<!---a href = "/a0N/e?CF00N40000002f6H9={!accName}&CF00N40000002f6H9_lkid={!AccRecId}&retURL=%2F{!AccRecId }" value="New Note" id="theCommandLink" target="_parent">New Note</a>--->
+
+                  
+        </apex:pageBlockButtons>
+    
+    
+           <div style="overflow:scroll; height:200px;">     
+               <apex:pageBlockTable width="100%" value="{!notesList}" var="note">
+               
+                       <apex:column width="5px" headerValue="Action">  <!-- Col-1    -->
+   
+ <!--   *******************    Edit Link for Tasks STARTS Here      ****************   -->  
+ 
+ <a href="/{!note.Id}/e?retURL=%2F{!AccRecId }" id="{!note.Id}" target="_parent" location="top" fullscreen="no" onblur="LookupHoverDetail.getHover('{!note.Id}').hide();"
+                                onfocus="LookupHoverDetail.getHover('{!note.Id}', '/{!note.Id}/m?retURL=%2F{!AccRecId}&isAjaxRequest=1').show();" 
+                                onmouseout="LookupHoverDetail.getHover('{!note.Id}').hide();" 
+                                onmouseover="LookupHoverDetail.getHover('{!note.Id}', '/{!note.Id}/m?retURL=%2F{!AccRecId}&isAjaxRequest=1').show();">Edit
+                                </a>
+                       </apex:column>
+                       
+                       <!-- Col-4  
+                       <apex:column width="500px" headerValue="Subject">  
+                         <apex:outputLink value="/{!opp.Id}" target="_parent"> {!opp.Subject } </apex:outputLink>
+                        </apex:column>
+                       --> 
+                                        
+                                             
+                        <apex:column width="10px" headerValue="PC Note Name ">  <!-- Col-3    -->                        
+                        <apex:outputLink value="/{!note.Id}" target="_parent"> {!note.Name} </apex:outputLink>                                
+                        <!-- apex:outputField value="{!note.Name}"/><br/ -->
+                        </apex:column>
+                                        
+                        
+                        <apex:column width="10px" headerValue="Call Type">  <!-- Col-3    -->
+                        <apex:outputField value="{!note.Call_Type__c}"/>                                         
+                        </apex:column>
+                                               
+                        <apex:column width="20px" headerValue="Created By">  <!-- Col-3    -->
+                        <apex:outputField value="{!note.CreatedById}"/>                                         
+                        </apex:column>
+                        
+                        <apex:column width="15px" headerValue="Created Date">  <!-- Col-3    -->
+                        <apex:outputField value="{!note.CreatedDate}"/>                                         
+                        </apex:column>
+                                              
+                        <apex:column width="100px" headerValue="Comments">  <!-- Col-3    -->
+                        <apex:outputField value="{!note.Comments__c}"/>                                         
+                        </apex:column>
+                        
+                        <apex:column width="20px" headerValue="Patient Care Reasons">  <!-- Col-3    -->
+                        <apex:outputField value="{!note.PC_Reasons__c}"/>                                         
+                        </apex:column>
+                        
+                        <apex:column width="20px" headerValue="Patient Care Follow Up">  <!-- Col-3    -->
+                        <apex:outputField value="{!note.Interaction_Status__c}"/>                                         
+                        </apex:column>
+  
+              </apex:pageBlockTable> 
+            
+       </div>
+      </apex:pageBlock>
+      
+  
+      
+ </apex:form>
+</apex:page>

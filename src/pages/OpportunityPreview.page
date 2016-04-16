@@ -1,0 +1,165 @@
+<apex:page standardController="Opportunity" extensions="OpportunityPreviewController" docType="html-5.0">
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/>
+    <style>
+        body .bPageBlock .pbBody .des .pbSubheader{
+            background-color: #8a9ebe;
+        }
+        
+        .accName {
+            font-size: 1.3em; 
+            font-weight: bold;
+        }
+        
+        .label {
+            font-size: 1.1em; 
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        
+        .textIndent{
+            text-indent: 10px;
+        }
+    </style>
+    
+    <script type="text/javascript">
+        $(function(){
+            $('[id$=shippingMethod]').find(':first-child').remove();
+        });
+        
+    </script>
+    
+    <apex:form id="mainForm">
+    <!-- comment out or delete the next line after initial rollout is done -->
+    <apex:actionFunction name="generateOrder" action="{!submitButton}"/> 
+    
+    <apex:actionFunction name="validateShipDate" rerender="pbsOpp" action="{!validateSchedShipDate}"/>
+    <apex:actionFunction name="recalculateTax" reRender="mainForm" action="{!recalculateTax}"/>
+    <apex:pageMessages />
+    <apex:pageBlock title="{!Opportunity.Name}">
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Credit Card Mgmt" onclick="window.open('{!ccUrl}');"/>
+            <!-- uncomment out the next line after initial rollout is done -->
+            <!-- <apex:commandButton value="Generate Order" action="{!submitButton}" disabled="{!IF(notPassedList.size != 0 || Opportunity.Order_NUM__c != null, true, false)}"/> -->
+            
+            <!-- comment out or delete the next line after initial rollout is done -->
+            <apex:commandButton value="Generate Order" onclick="initialRollOut();" disabled="{!IF(notPassedList.size != 0 || Opportunity.Order_NUM__c != null, true, false)}" rerender="none"/>
+            
+            <!--<apex:commandButton value="Generate Order" action="{!submitButton}" disabled="false"/>--><!-- Just for testing -->
+            <apex:commandButton value="Cancel" action="{!cancelButton}"/>
+        </apex:pageBlockButtons>
+        <apex:outputPanel styleClass="des" layout="block">
+            <apex:pageBlockSection title="Opportunity" columns="2" id="pbsOpp">
+                <apex:outputText value="{!shipToAddress}" label="Ship To Address" escape="false" rendered="{!IF(shipToAddressList.size <= 1, true, false)}"/>
+                
+                <apex:selectList size="1" value="{!shipToAddressId}" label="Ship To Address" rendered="{!IF(shipToAddressList.size > 1, true, false)}" onChange="recalculateTax();">
+                  <apex:selectOptions value="{!shipToAddressList }"/>
+                </apex:selectList>
+                <apex:outputText value="{!billToAddress}" label="Bill To Address" escape="false"/>
+                <apex:outputField value="{!Opportunity.TotalOpportunityQuantity}"/>
+                <apex:outputField value="{!oppTemp.Pricebook2.Name}"/> 
+                <apex:outputField value="{!Opportunity.Amount}"/>
+                <apex:outputText Value="$ {!copayPrice}" label="Out-of-pocket Total"/>
+                
+                <apex:outputField value="{!Opportunity.Payor__c}"/>
+                
+                <apex:inputField value="{!oppTemp.Shipping_Method__c}" id="shippingMethod">
+                    <apex:actionSupport event="onchange" action="{!calculateShippingAmnt}" rerender="otShipAmnt,otTotalAmnt"/>
+                </apex:inputField>
+                <apex:outputField value="{!Opportunity.MissingDocsCount__c}"/>
+
+                
+                <apex:input id="iShipDate" value="{!schedShipDate}" label="Scheduled Ship Date" type="date" onchange="validateShipDate()">                  
+                    <apex:pageMessage summary="Date must be in the Future" severity="error" id="shipDateMsg" rendered="{!schedShipDateMsg}" strength="1" />
+                </apex:input>
+                <apex:outputText label="Copay Message" value="{!copayMsg}"/>
+                
+                <apex:inputCheckBox label="Waive Shipping Charges" value="{!waiveShipping}">
+                <apex:actionSupport event="onchange" action="{!calculateShippingAmnt}" rerender="otShipAmnt,otTotalAmnt"/>
+                </apex:inputCheckBox>
+
+                <apex:outputText value="" id="otforAlign" rendered="{!oppTemp.Pricebook2.Name != 'Cash Price List'}"/>
+                <apex:inputCheckbox value="{!signatureReq}" label="Signature Required"/>
+                <apex:outputText id="otShipAmnt" value="$ {!shippingAmount}" label="Shipping Amount"/>
+                <apex:inputCheckbox value="{!taxExempt}" label="Tax Exempt" rendered="{!oppTemp.Pricebook2.Name == 'Cash Price List'}">
+                    <apex:actionSupport event="onchange" action="{!recalculateTax}" rerender="mainForm"/>
+                </apex:inputCheckbox>
+                <apex:inputTextArea value="{!shippingNotes}" id="shippingNotes" label="Shipping Notes" html-maxlength="200" style="resize: none;"/> 
+                <apex:outputText id="taxAmount" value="$ {!taxAmount}" label="Tax Amount" rendered="{!oppTemp.Pricebook2.Name == 'Cash Price List'}"/> 
+                <apex:outputText id="otTotalAmnt" value="$ {!TotalAmount}" label="Total Amount"/>
+                
+            </apex:pageBlockSection>
+        </apex:outputPanel>
+        <apex:outputPanel styleClass="des" layout="block">
+            <apex:pageBlockSection title="Opportunity Products" columns="1">
+                <apex:pageBlockTable value="{!oppLineItemList}" var="oppLineItem" width="100%" border="0" cellspacing="0" cellpadding="0"> 
+                    <apex:column value="{!oppLineItem.Product2.Name}"/>
+                    <apex:column value="{!oppLineItem.Quantity}"/>
+                    <apex:column value="{!oppLineItem.UnitPrice}"/>
+                    <apex:column value="{!oppLineItem.Description}"/>
+                </apex:pageBlockTable>
+                
+            </apex:pageBlockSection>
+        </apex:outputPanel>
+        <apex:outputPanel styleClass="des" layout="block">
+            <apex:pageBlockSection title="Passed And Not Passed Validation" columns="3">
+                <apex:outputPanel >
+                    <apex:outputText value="Passed" styleClass="label"/><p/>
+                    <apex:repeat value="{!passedList}" var="passed">
+                        <li class="textIndent"><apex:outputText value="{!passed}"/><p/></li>
+                    </apex:repeat>
+                </apex:outputPanel>
+                <apex:outputPanel > 
+                    <apex:outputText value="Not Passed" styleClass="label"/><p/>
+                    <apex:repeat value="{!notPassedList}" var="notPassed">
+                        <li class="textIndent"><apex:outputText value="{!notPassed}"/><p/></li>
+                    </apex:repeat>
+                </apex:outputPanel>
+                <apex:outputPanel > 
+                    <apex:outputText value="Warnings" styleClass="label"/><p/>
+                    <apex:repeat value="{!WarningList}" var="warnings">
+                        <li class="textIndent"><apex:outputText value="{!warnings}"/><p/></li>
+                    </apex:repeat>
+                    </apex:outputPanel>
+                
+            </apex:pageBlockSection>
+        </apex:outputPanel>
+        <apex:outputPanel styleClass="des" layout="block">
+            <apex:pageBlockSection title="Benefits" columns="1">
+                <apex:pageBlockTable value="{!benefitList}" var="bnfList" width="100%" border="0" cellspacing="0" cellpadding="0"> 
+                    <apex:column value="{!bnfList.Name}"/>
+                    <apex:column value="{!bnfList.Benefit_Hierarchy__c}"/>
+                    <apex:column value="{!bnfList.Payor__c}"/>
+                    <apex:column value="{!bnfList.Start_Date__c}"/>
+                    <apex:column rendered="{!IF(benefitList.size <= 0, true, false)}">No results found</apex:column>
+                </apex:pageBlockTable>
+                
+            </apex:pageBlockSection>
+        </apex:outputPanel>
+    </apex:pageBlock>
+    </apex:form>
+    
+    <!-- remove the whole script after initial rollout is done -->
+    <script type = "text/javascript">
+        var __sfdcSessionId = '{!GETSESSIONID()}';
+    
+    </script>
+    
+    <script src="/soap/ajax/31.0/connection.js" type="text/javascript"></script>
+    <script src="/soap/ajax/31.0/apex.js" type="text/javascript"></script>
+	<script>
+		function initialRollOut(){
+			var result = sforce.connection.query("SELECT name from DryRunUsers__c");
+			var records = result.getArray("records");
+			var map = new Object();
+			for (var i=0; i< records.length; i++) {
+				var record = records[i];
+				map[record.Name] = record;
+			}
+			if(map["{!$User.Email}"] != null){
+				generateOrder();
+			}else{
+				alert('You do not have access to use this button.');
+			}
+		}
+	</script>
+</apex:page>

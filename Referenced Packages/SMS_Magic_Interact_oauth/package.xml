@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SMS_Magic_Interact_oauth</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <modules>
+        <module>
+            <label>SMS_Magic_Interact_oauth</label>
+            <moduleType>connected</moduleType>
+            <name>SMS_Magic_Interact_oauth</name>
+            <types>
+                <members>SMS_Magic_Interact_oauth_devConfig</members>
+                <name>ConnectivityDevConfigMetadata</name>
+            </types>
+            <types>
+                <members>smagicinteract__SMS_Magic_Interact_oauth</members>
+                <name>Module</name>
+            </types>
+            <version>13.0</version>
+        </module>
+    </modules>
+    <namespacePrefix>smagicinteract</namespacePrefix>
+    <version>31.0</version>
+</Package>

@@ -1,0 +1,151 @@
+<apex:page showHeader="false" docType="html-5.0" controller="CS_FormTextUtil">
+
+<!-- This script takes the endpoint URL parameter passed from the deployment page and makes it the action for the form -->
+
+<script type='text/javascript'>
+(function() {
+
+function handlePageLoad() {
+var endpointMatcher = new RegExp("[\\?\\&]endpoint=([^&#]*)");
+document.getElementById('prechatForm').setAttribute('action',
+decodeURIComponent(endpointMatcher.exec(document.location.search)[1]));
+
+} if (window.addEventListener) {
+window.addEventListener('load', handlePageLoad, false);
+} else { window.attachEvent('onload', handlePageLoad, false);
+}})();
+</script>
+
+<!-- Form that gathers information from the chat visitor and sets the values to Live Agent Custom Details used later in the example -->
+<form method='post' id='prechatForm'>
+    <body>
+    <div id="wrapper">
+    <!-- PreChatForm for unauthenticated User -->
+    
+     <div id="header">
+    <!-- Dexcom One Step Ahead Logo -->
+    <apex:image value="{!$Resource.DexcomOneStepAhead}"  />
+    </div><br/>
+    
+    <div id="container">
+        
+        Dexcom Pre-Chat Form <br/>
+        <apex:outputPanel >
+        <table>
+            <tr>
+                <td>
+                    First name:
+                </td>
+                <td>
+                    <input type='text' name='liveagent.prechat:AccountFirstName' id='firstName' onkeyup="nameCheck();" required="true" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Last name:
+                </td>
+                <td>
+                    <input type='text' name='liveagent.prechat:AccountLastName' id='lastName' onkeyup="nameCheck();" required="true" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Email:
+                </td>
+                <td>
+                    <input type='email' name='liveagent.prechat:AccountEmail' id='email' required="true" />
+                </td>
+            </tr>
+        </table>     
+     
+        <label>
+            <!-- Technical support contact info-->
+            <apex:outputText value="{!formTextObj.Contact_Details__c}" escape="false" />
+        </label> <br/>
+        <input type='submit' value='Chat Now' id='prechat_submit' onsubmit="nameCheck();" onclick="setName()"/>
+    </apex:outputPanel>
+    
+    </div>
+    
+    <div id="footer"> 
+    <apex:outputPanel >
+        <!-- Terms and Conditions-->
+        <apex:outputText value="{!formTextObj.Terms_And_Conditions__c}" escape="false"/>
+    </apex:outputPanel>
+    </div>
+    
+    <!-- Used to set the visitor's name for the agent in the Console -->
+    <input type="hidden" name="liveagent.prechat.name" id="prechat_field_name" />
+
+<script type="text/javascript">
+   <!-- Set the visitor's name for the agent in the Console to first and last name provided by the customer -->
+   function setName() {
+        document.getElementById("prechat_field_name").value = 
+            document.getElementById("firstName").value + " " + document.getElementById("lastName").value.charAt(0);
+    }
+    
+    function nameCheck() {
+        var firstName = document.getElementById("firstName").value;
+        var lastName = document.getElementById("lastName").value;
+        if(!(/^[A-Za-z\s]+$/.test(firstName)) || !(/^[A-Za-z\s]+$/.test(lastName)) 
+           && (firstName != '' && lastName != '')) {
+            document.getElementById("prechat_submit").disabled = true;
+            alert('Invalid input. Name should only contain letters.');
+        } else {
+            document.getElementById("prechat_submit").disabled = false;
+        }
+    }
+</script>
+
+<style type="text/css">
+
+#formPanel {
+    letter-spacing: 0.5px; 
+    padding-left: 10px;
+    margin:10px;
+}
+
+#body {
+   margin:10px;
+   padding:10px;
+   height:100%;
+}
+#container {
+   min-height:100%;
+   position:relative;
+   letter-spacing: 0.5px; 
+   padding-left: 10px;
+   margin:10px;
+}
+#header {
+   
+   padding:10px;
+}
+#body {
+   padding:10px;
+   padding-bottom:170px;   /* Height of the footer */
+   letter-spacing: 0.5px; 
+   padding-left: 10px;
+}
+#footer {
+   position:absolute;
+   bottom:0;
+   width:auto;
+   height:170px;   /* Height of the footer */
+   font-weight: bold;
+   color: #FFF;
+   background-color: #666;
+   padding: 10px;
+   margin: 20px;
+   font-size: 0.8em;
+   font-style: italic;
+}
+
+</style>
+
+</div>
+</body>
+
+</form>
+
+</apex:page>

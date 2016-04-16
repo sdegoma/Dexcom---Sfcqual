@@ -1,0 +1,36 @@
+<apex:page standardController="smagicinteract__forward_config__c" extensions="smagicinteract.IncomingAlertConfigurationController" tabStyle="SMS_Magic_Settings__tab">
+<apex:pageMessages /><br/>
+<apex:form id="confForm">
+<apex:pageBlock id="incomingSettings" title="Keyword Based Alert on Incoming SMS" rendered="{!hasPermission }">
+    <div style="margin:10px;">
+<apex:outputText >You can setup keyword based forwarding here. You can save your time by forwarding all received messages to your sms inbox or email inbox on your smartphone. It will help you keep track of inbound inquiries or complains, sent by customers to inbound number.
+</apex:outputText>
+</div>
+         <apex:pageBlockSection title="Choose Keyword" >        
+         <apex:inputField label="Enter Keyword"  value="{!smagicinteract__forward_config__c.smagicinteract__Keyword__c}" />
+         </apex:pageBlockSection> 
+        
+         <apex:pageBlockSection title="User To Notify " >                
+                <apex:selectList label="Choose User" size="1" id="userList" value="{!smagicinteract__forward_config__c.smagicinteract__forwardToUser__c}" >
+                    <apex:selectOptions value="{!userListDropdown}"/>
+                </apex:selectList>
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection title="Notification Method " >      
+                   
+            <apex:inputField label="Notify Instantly by Email"  value="{!smagicinteract__forward_config__c.smagicinteract__forwardToEmail__c}" />
+            <br/>
+            <apex:inputField label="Notify Instantly by SMS"  value="{!smagicinteract__forward_config__c.smagicinteract__forwardToMobilePhone__c}" />
+                    
+        </apex:pageBlockSection>
+            
+    <apex:pageBlockButtons location="Bottom" >
+        <apex:commandButton action="{!save}" value="Save" />
+        <apex:commandButton action="{!cancel}" value="Cancel" />
+        
+    </apex:pageBlockButtons>
+    
+</apex:pageBlock>
+
+</apex:form>    
+</apex:page>

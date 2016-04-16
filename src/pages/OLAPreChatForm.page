@@ -1,0 +1,173 @@
+<apex:page showHeader="false" controller="CS_FormTextUtil">
+
+<!-- This script takes the endpoint URL parameter passed from the deployment page and makes it the action for the form -->
+
+<script type='text/javascript'>
+(function() {
+
+function handlePageLoad() {
+var endpointMatcher = new RegExp("[\\?\\&]endpoint=([^&#]*)");
+document.getElementById('prechatForm').setAttribute('action',
+decodeURIComponent(endpointMatcher.exec(document.location.search)[1]));
+
+} if (window.addEventListener) {
+window.addEventListener('load', handlePageLoad, false);
+} else { window.attachEvent('onload', handlePageLoad, false);
+}})();
+</script>
+
+<!-- Form that gathers information from the chat visitor and sets the values to Live Agent Custom Details used later in the example -->
+<form method='post' id='prechatForm'>
+    <body>
+    <div id="wrapper">
+     <!-- Dexcom One Step Ahead Logo -->
+    <div id="header">
+    <apex:image value="{!$Resource.DexcomOneStepAhead}"  />
+    </div>
+    
+    <div id="container">
+    <!-- PreChatForm for authenticated User -->
+    <apex:outputPanel id="formPanel" >
+        Dexcom Pre-Chat Form <br/>
+        <apex:outputLabel >Is this a technical support issue?</apex:outputLabel>
+        <input id='yes' type='radio' value='yes' name="techsupport" onchange="setHideShowComponents();"/> Yes
+        <input id='no' type='radio' value='no' name="techsupport" onchange="setHideShowComponents();" checked="true" /> No <br/><br />
+        
+        <!-- Support text displays when "Yes" is selected -->
+        <span id="techsupporttxt"> 
+            <!-- Technical support contact info-->
+            <apex:outputText value="{!formTextObj.Contact_Details__c}" escape="false" />
+        </span>
+        <!-- Submit button for entering chat -->
+        <input type='submit' class="auth" value='Chat Now' id='prechat_submit' onclick="setName();" />
+    </apex:outputPanel>
+    </div>
+    
+    <div id="footer"> 
+    <apex:outputPanel >
+        <!-- Terms and Conditions-->
+        <apex:outputText value="{!formTextObj.Terms_And_Conditions__c}" escape="false"/>
+    </apex:outputPanel>
+    </div>
+
+    <!-- Used to set the visitor's name for the agent in the Console -->
+
+    <input type="hidden" name="liveagent.prechat.name" id="prechat_field_name" />
+
+    <!-- map: Use the data from prechat form to map it to the Salesforce record's fields -->
+    
+    <!--Store the Party Id that needs to be passed to the LiveAgent Api-->
+    <input type="hidden" name="liveagent.prechat:PartyID" id="pID" />
+    
+     <!--Set the Person Account flag to true and pass it to the LiveAgent Api-->
+    <input type='hidden' name='liveagent.prechat:IsPersonAcc' value="true" id="personAcc"/> 
+    
+    <!--Map the Party Id and isPerAccount Fields to the Account -->
+    <input type="hidden" name="liveagent.prechat.findorcreate.map:Account" value="isPersonAccount,IsPersonAcc;Party_Id__c,PartyID;" />
+    
+    
+    <!-- Try to find the Person Account by the Party Id (exact match) -->
+    <input type="hidden" name="liveagent.prechat.findorcreate.map.doFind:Account" value="isPersonAccount,true;Party_Id__c,true" />
+    <input type="hidden" name="liveagent.prechat.findorcreate.map.isExactMatch:Account" value="isPersonAccount,true;Party_Id__c,true" />
+    
+    <!-- saveToTranscript: Associates the records found / created, i.e. Account , to the Live Chat Transcript record. -->
+    <input type="hidden" name="liveagent.prechat.findorcreate.saveToTranscript:Account" value="AccountId" />
+
+<!-- Set the visitor's name for the agent in the Console to first and last name provided by the customer -->
+<script type="text/javascript">
+   setHideShowComponents();
+   setPartyId();
+   
+    //Sets the first name and last name of the visitor
+   function setName() {
+        document.getElementById("prechat_field_name").value = 
+            document.getElementById("firstName").value + " " + document.getElementById("lastName").value.charAt(0);
+    }
+    
+    //Hide and show components in post chat form
+    function setHideShowComponents() {
+        var yesId = document.getElementById("yes").checked;
+        if(yesId) {
+            document.getElementById("prechat_submit").style.display = "none";
+            document.getElementById("techsupporttxt").style.display = "inline-block";
+        } else {
+            document.getElementById("prechat_submit").style.display = "inline-block";
+            document.getElementById("techsupporttxt").style.display = "none";
+        }
+    }
+    
+    //Set Party Id to Map Account
+    function setPartyId(){
+        // fetch the value from the document (the Party Id) and set it to the field that is being passed to the Console
+        document.getElementById('pID').value='1234567890';
+    }
+    
+</script>
+
+<style type="text/css">
+/*#formPanel {
+    letter-spacing: 0.5px; 
+    padding-left: 10px;
+}
+
+#footer {
+ font-family: Verdana, Geneva, sans-serif;
+ font-size: 0.7em;
+ font-weight: bold;
+ color: #FFF;
+ background-color: #666;
+ padding: 10px;
+ margin: 20px;
+ height: auto;
+ width: 90%;
+} */
+
+#formPanel {
+    letter-spacing: 0.5px; 
+    padding-left: 10px;
+    margin:10px;
+}
+
+#body {
+   margin:10px;
+   padding:10px;
+   height:100%;
+}
+#container {
+   min-height:100%;
+   position:relative;
+   letter-spacing: 0.5px; 
+   padding-left: 10px;
+   margin:10px;
+}
+#header {
+   
+   padding:10px;
+}
+#body {
+   padding:10px;
+   padding-bottom:170px;   /* Height of the footer */
+   letter-spacing: 0.5px; 
+   padding-left: 10px;
+}
+#footer {
+   position:absolute;
+   bottom:0;
+   width:auto;
+   height:170px;   /* Height of the footer */
+   font-weight: bold;
+   color: #FFF;
+   background-color: #666;
+   padding: 10px;
+   margin: 20px;
+   font-size: 0.8em;
+   font-style: italic;
+}
+
+</style>
+
+</div>
+</body>
+</form>
+
+</apex:page>

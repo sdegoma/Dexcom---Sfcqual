@@ -1,0 +1,12 @@
+<apex:page >
+<apex:canvasApp applicationName="Sparkler_PRD"
+ height="812px"
+ width="1000px"
+ parameters="
+ {
+  'ts.name': 'FieldSalesCalls/TerritorySnapshot?:iid=1',
+  'ts.trustedTicket.host': 'prodbi01.dexcom.com',
+  'ts.trustedTicket.username': 'thall'
+ }" />
+
+</apex:page>

@@ -1,0 +1,241 @@
+<apex:page controller="GlobalSearchControllerMVN" showHeader="true" sidebar="true" tabStyle="Account">
+	<apex:includeScript value="{!URLFOR($Resource.jquery)}"/>
+	<apex:includeScript value="{!URLFOR($Resource.bootstrap, 'bootstrap/js/bootstrap.js')}"/>
+	<apex:includeScript value="{!URLFOR($Resource.datatables, 'media/js/jquery.dataTables.js')}"/>
+	<apex:stylesheet value="{!URLFOR($Resource.datatables, 'media/css/jquery.dataTables.css')}" />
+
+	<script>
+		
+
+	</script>
+
+	<apex:form >
+
+	<apex:pageBlock title="IMS Account Search">
+		<apex:pageBlockButtons location="bottom">
+			<apex:commandButton action="{!doSearch}" value="Search" rerender="searchResults, salesforceSearchResults" status="searchStatus"/>
+			<apex:actionStatus id="searchStatus" >
+                <apex:facet name="start" >
+                  <img src="/img/loading.gif" />                    
+                </apex:facet>
+            </apex:actionStatus>
+	        
+	    </apex:pageBlockButtons>
+		<apex:pageBlockSection title="Search Filter" collapsible="false" columns="2">
+			
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Name Search Method" />
+				<apex:selectList value="{!selectedSearchOption}" multiselect="false" size="1">
+	            	<apex:selectOptions value="{!searchOptions}"/>
+	        	</apex:selectList>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="First Name" />
+				<apex:inputText value="{!firstName}"/>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Last Name" />
+				<apex:inputText value="{!lastName}"/>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="City" />
+				<apex:inputText value="{!city}"/>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="State" />
+				<apex:inputField value="{!addressState.State__c}" style="width:125px"/>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Zip" />
+				<apex:inputText value="{!zip5}"/>
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="NPI #" />
+				<apex:inputText value="{!npi}"/>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="DEA #" />
+				<apex:inputText value="{!dea}"/>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Professional Designation" />
+				<apex:selectList value="{!selectedProfessionalDesignation}" multiselect="false" size="1" style="width:300px">
+		            <apex:selectOptions value="{!professionalDesignationValues}"/>
+		        </apex:selectList>
+			</apex:pageBlockSectionItem>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Specialty" />
+				<apex:selectList value="{!selectedSpecialty}" multiselect="false" size="1" style="width:300px">
+		            <apex:selectOptions value="{!specialtyValues}"/>
+		        </apex:selectList>
+			</apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+		
+	</apex:pageBlock>
+
+	<apex:outputPanel id="salesforceSearchResults">
+		<apex:pageBlock title="Salesforce Search Results" rendered="{!searchDone}">
+			<apex:outputPanel rendered="{!!salesforceAccountsFound}">
+				<h3>No Accounts Found.</h3>
+			</apex:outputPanel>
+			<apex:outputPanel rendered="{!salesforceAccountsFound}">
+				<table class="row-border hover" id="salesforceResultsTable">
+			    	<thead>
+			            <tr>
+			            	<th></th>
+			            	<th>First Name</th>
+			                <th>Last Name</th>
+			                <th>Suffix</th>
+			                <th>Gender Code</th>
+			                <th>Professional Designation</th>
+			                <th>Specialty</th>
+			                <th>City</th>
+			                <th>State</th>
+			                <th>Zip</th>
+			                <th>Party ID</th>
+			                <th>NPI #</th>
+			                <th>DEA #</th>
+			            </tr>
+			        </thead>
+
+			        <tbody>
+			        	<apex:repeat value="{!salesforceResults}" var="result">
+						<tr>
+							<td><apex:outputLink value="/{!result.hceId}" target="_blank">View</apex:outputLink></td>
+							<td><apex:outputText value="{!result.firstName}"/></td>
+							<td><apex:outputText value="{!result.lastName}"/></td>
+							<td><apex:outputText value="{!result.suffix}"/></td>
+							<td><apex:outputText value="{!result.genderCode}"/></td>
+							<td><apex:outputText value="{!result.professionalDesc}"/></td>
+							<td><apex:outputText value="{!result.specialty}"/></td>
+							<td><apex:outputText value="{!result.city}"/></td>
+							<td><apex:outputText value="{!result.state}"/></td>
+							<td><apex:outputText value="{!result.zip5}"/></td>
+							<td><apex:outputText value="{!result.partyId}"/></td>
+							<td><apex:outputText value="{!result.npiNum}"/></td>
+							<td><apex:outputText value="{!result.deaNum}"/></td>
+						</tr>
+						</apex:repeat>
+					</tbody>
+				</table>
+				<script>
+					$('table[id="salesforceResultsTable"]').dataTable({
+				    	"paging" : false,
+				    	"pageLength": 50,
+				    	"lengthChange": false
+				    });
+				</script>
+			</apex:outputPanel>
+		</apex:pageBlock>
+	</apex:outputPanel>
+	
+	<apex:outputPanel id="searchResults">
+		<apex:pageBlock title="IMS Search Results" rendered="{!searchDone}">
+			<apex:pageBlockButtons location="bottom">
+				<apex:commandButton onclick="getSelectedAccount();" value="Save Account" rerender="dummy" status="addAccountStatus" rendered="{!accountsFound}"/>
+				<apex:actionStatus id="addAccountStatus" >
+	                <apex:facet name="start" >
+	                  <img src="/img/loading.gif" />                    
+	                </apex:facet>
+	            </apex:actionStatus>
+				<apex:outputPanel style="float:right;">
+					Couldn't find the Account you're looking for?
+					<apex:commandLink value="Create a New Account" action="{!redirectToNewAccount}"/>
+				</apex:outputPanel>
+		    </apex:pageBlockButtons>
+			<apex:pageMessages />
+			<apex:outputPanel rendered="{!!accountsFound}">
+				<h3>No Accounts Found.</h3>
+			</apex:outputPanel>
+			<apex:outputPanel rendered="{!accountsFound}">
+				<table class="row-border hover" id="imsSearchResults">
+			    	<thead>
+			            <tr>
+			            	<th>First Name</th>
+			                <th>Last Name</th>
+			                <th>Suffix</th>
+			                <th>Gender Code</th>
+			                <th>Professional Designation</th>
+			                <th>Specialty</th>
+			                <th>City</th>
+			                <th>State</th>
+			                <th>Zip</th>
+			                <th>NPI #</th>
+			                <th>DEA #</th>
+			            </tr>
+			        </thead>
+
+			        <tbody>
+			        	<apex:repeat value="{!searchResults}" var="result">
+						<tr>
+							<td id="{!result.hceId}"><apex:outputText value="{!result.firstName}"/></td>
+							<td><apex:outputText value="{!result.lastName}"/></td>
+							<td><apex:outputText value="{!result.suffix}"/></td>
+							<td><apex:outputText value="{!result.genderCode}"/></td>
+							<td><apex:outputText value="{!result.professionalDesc}"/></td>
+							<td><apex:outputText value="{!result.specialty}"/></td>
+							<td><apex:outputText value="{!result.city}"/></td>
+							<td><apex:outputText value="{!result.state}"/></td>
+							<td><apex:outputText value="{!result.zip5}"/></td>
+							<td><apex:outputText value="{!result.npiNum}"/></td>
+							<td><apex:outputText value="{!result.deaNum}"/></td>
+						</tr>
+						</apex:repeat>
+					</tbody>
+				</table>
+				<script>
+					debugger;
+					var table = $('table[id="imsSearchResults"]').dataTable({
+				    	"paging" : false,
+				    	"pageLength": 50,
+				    	"lengthChange": false
+				    });
+
+				    $('#imsSearchResults tbody').on( 'click', 'tr', function () {
+				        if ( $(this).hasClass('selected') ) {
+				            $(this).removeClass('selected');
+				        }
+				        else {
+				            table.$('tr.selected').removeClass('selected');
+				            $(this).addClass('selected');
+				        }
+				    } );
+				 
+				    $('#button').click( function () {
+				        table.row('.selected').remove().draw( false );
+				    } );
+
+				    function getSelectedAccount(){
+						var hceId;
+
+						var selectedRow = table.find("tbody tr[class*='selected']");
+
+						if(selectedRow != undefined && selectedRow.length > 0){
+							hceId = $(selectedRow[0].children[0]).attr('id');
+							saveAccount(hceId);
+						}
+					}
+				</script>
+			</apex:outputPanel>
+		</apex:pageBlock>
+	</apex:outputPanel>
+	<apex:outputPanel id="dummy">
+	</apex:outputPanel>
+	<apex:actionFunction action="{!saveSelectedAccount}" name="saveAccount" rerender="dummy">
+        <apex:param name="hceId" assignTo="{!selectedHCEID}" value="" />
+    </apex:actionFunction>
+	</apex:form>
+</apex:page>

@@ -1,0 +1,51 @@
+<apex:page standardController="Opportunity" extensions="Oppinlinecontroller">
+ <apex:form >
+  
+      <apex:pageBlock title="Notes History">
+      
+        <apex:pageBlockButtons location="top">
+                    <!-- apex:commandButton  value="New Note" action="{!URLFOR($Action.Activity.LogCall)}" / -->
+                    
+<!---  New Note Link --> 
+<a href="/apex/EditTaskPage?tsk1={!$User.Id}&RecordType=01240000000UZKP&OppID={!OppRecId}&retURL=%2F{!OppRecId}&ent=Task" value="New Note" id="theCommandLink" target="_parent">New Note</a> 
+                  
+        </apex:pageBlockButtons>
+    
+               <apex:pageBlockTable width="100%" value="{!taskList}" var="opp">
+               
+                       <apex:column width="250px" headerValue="Action">  <!-- Col-1    -->
+   
+ <!--Edit Link for Tasks -->  
+ 
+ <a href="/apex/EditTaskPage?&tskID={!opp.Id}&retURL=%2F{!OppRecId}&OppID={!OppRecId}" id="{!Opp.Id}" target="_parent" location="top" fullscreen="no" onblur="LookupHoverDetail.getHover('{!Opp.Id}').hide();"
+                                onfocus="LookupHoverDetail.getHover('{!Opp.Id}', '/{!Opp.Id}/m?retURL=%2F{!OppRecId}&isAjaxRequest=1').show();" 
+                                onmouseout="LookupHoverDetail.getHover('{!Opp.Id}').hide();" 
+                                onmouseover="LookupHoverDetail.getHover('{!Opp.Id}', '/{!Opp.Id}/m?retURL=%2F{!OppRecId}&isAjaxRequest=1').show();">Edit
+                                </a>
+                       </apex:column>
+                       
+                       <apex:column width="500px" headerValue="Subject">  <!-- Col-4  -->
+                         <apex:outputLink value="/{!opp.Id}" target="_parent"> {!opp.Subject } </apex:outputLink>
+                        </apex:column>
+                        
+                                        
+                                             
+                        <apex:column width="500px" headerValue="Created By">  <!-- Col-3    -->
+                                <apex:outputField value="{!opp.CreatedById}"/><br/>
+                        </apex:column>
+                        
+                        <apex:column width="500px" headerValue="Created On">  <!-- Col-2    -->
+                                <apex:outputField value="{!opp.CreatedDate}"/><br/>                               
+                        </apex:column>
+                                        
+                        
+                        
+  
+              </apex:pageBlockTable> 
+    
+      </apex:pageBlock>
+      
+  
+      
+ </apex:form>
+</apex:page>

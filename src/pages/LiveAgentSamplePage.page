@@ -1,0 +1,30 @@
+<apex:page showHeader="false">
+    <!-- CSR -->
+    CSR 
+    <img id="liveagent_button_online_5738A0000008OIZ" style="display: none; border: 0px none; cursor: pointer" onclick="liveagent.startChat('5738A0000008OIZ')" src="https://sfcqual-dexcom.cs45.force.com/liveagent/resource/1459274965000/CSRChatOnline" /><img id="liveagent_button_offline_5738A0000008OIZ" style="display: none; border: 0px none; " src="https://sfcqual-dexcom.cs45.force.com/liveagent/resource/1459274959000/CSRChatOffline" />
+<script type="text/javascript">
+if (!window._laq) { window._laq = []; }
+window._laq.push(function(){liveagent.showWhenOnline('5738A0000008OIZ', document.getElementById('liveagent_button_online_5738A0000008OIZ'));
+liveagent.showWhenOffline('5738A0000008OIZ', document.getElementById('liveagent_button_offline_5738A0000008OIZ'));
+});</script>
+
+
+    <br/>
+    <!-- OLA -->
+    OLA 
+    <img id="liveagent_button_online_5738A0000008OIa" style="display: none; border: 0px none; cursor: pointer" onclick="liveagent.startChat('5738A0000008OIa')" src="https://sfcqual-dexcom.cs45.force.com/liveagent/resource/1459274985000/OLAChatOnline" /><img id="liveagent_button_offline_5738A0000008OIa" style="display: none; border: 0px none; " src="https://sfcqual-dexcom.cs45.force.com/liveagent/resource/1459274979000/OLAChatOffline" />
+<script type="text/javascript">
+if (!window._laq) { window._laq = []; }
+window._laq.push(function(){liveagent.showWhenOnline('5738A0000008OIa', document.getElementById('liveagent_button_online_5738A0000008OIa'));
+liveagent.showWhenOffline('5738A0000008OIa', document.getElementById('liveagent_button_offline_5738A0000008OIa'));
+});</script>
+
+
+    
+    <script type='text/javascript' src='https://c.la4-c2cs-chi.salesforceliveagent.com/content/g/js/36.0/deployment.js'></script>
+    <script type='text/javascript'>
+    liveagent.init('https://d.la4-c2cs-chi.salesforceliveagent.com/chat', '5728A0000008OIU', '00D8A0000008sxK');
+    </script>
+    
+    <script type="text/javascript"> liveagent.setChatWindowHeight(500); liveagent.setChatWindowWidth(350); </script>
+</apex:page>

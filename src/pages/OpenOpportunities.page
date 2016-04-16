@@ -1,0 +1,49 @@
+<apex:page standardController="Contact" extensions="inlinecontroller">
+ <apex:form >
+  
+      <apex:pageBlock title="Opportunities">
+    
+               <apex:pageBlockTable width="120%" value="{!OppList}" var="opp">
+               
+                       <apex:column width="500px" headerValue="Action">  <!-- Col-1    -->
+                                <a href="/{!Opp.Id}/e?retURL=%2F{!Opp.Id}" id="{!Opp.Id}" target="_blank" location="top" fullscreen="no" onblur="LookupHoverDetail.getHover('{!Opp.Id}').hide();"
+                                onfocus="LookupHoverDetail.getHover('{!Opp.Id}', '/{!Opp.Id}/m?retURL=%2F{!Opp.Id}&isAjaxRequest=1').show();" 
+                                onmouseout="LookupHoverDetail.getHover('{!Opp.Id}').hide();" 
+                                onmouseover="LookupHoverDetail.getHover('{!Opp.Id}', '/{!Opp.Id}/m?retURL=%2F{!Opp.Id}&isAjaxRequest=1').show();">Edit</a>
+                                &nbsp;|&nbsp;    
+                        <apex:outputLink value="{!URLFOR($Action.Opportunity.Delete, Opp.id)}" onclick="return window.confirm('Are you sure?');" target="_Top">Del</apex:outputLink>
+                        </apex:column>
+                        
+                        <apex:column width="500px" headerValue="Opportunity Name">  <!-- Col-1    -->
+                                <apex:outputLink value="/{!opp.Id}" target="_blank"> {!opp.Name} </apex:outputLink>
+                        </apex:column>
+                        
+                        <apex:column width="500px" headerValue="Stage">  <!-- Col-2    -->
+                                <apex:outputField value="{!opp.StageName}"/><br/>
+                        </apex:column>
+                        
+                        <apex:column width="500px" headerValue="Status">  <!-- Col-3    -->
+                                <apex:outputField value="{!opp.Status__c}"/><br/>
+                        </apex:column>
+                        
+                        <apex:column width="500px" headerValue="Payor">  <!-- Col-4    -->
+                        <apex:outputLink value="/{!opp.Payor__r.Id}" target="_blank"> {!opp.Payor__r.Name} </apex:outputLink>
+                           
+                        </apex:column>
+                        
+                        <apex:column width="500px" headerValue="Account Name">  <!-- Col-5    -->
+                                <apex:outputLink value="/{!opp.AccountId}" target="_blank"> {!opp.Account.Name} </apex:outputLink>
+                        </apex:column>
+                        
+                        <apex:column width="500px" headerValue="Estimated Close Date">  <!-- Col-6    -->
+                                <apex:outputField value="{!opp.CloseDate}"/><br/>
+                        </apex:column>
+  
+              </apex:pageBlockTable> 
+    
+      </apex:pageBlock>
+      
+  
+      
+ </apex:form>
+</apex:page>

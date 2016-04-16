@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <cacheControl>Public</cacheControl>
+    <contentType>image/jpeg</contentType>
+    <description>This is the Dexcom Logo for the Prechat, Postchat and Chat forms. This has been adjusted to 180X56 pixel ratio.</description>
+</StaticResource>

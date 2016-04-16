@@ -1,0 +1,37 @@
+<apex:page standardController="Task" extensions="Oppinlinecontroller1">
+<apex:sectionHeader title="Note" subtitle="New Note"/>
+
+<style type="text/css">
+        .myClass { width: 300px; Height: 80px; }
+    </style>
+    
+<apex:form >
+ 
+<apex:pageBlock title="Note Edit" mode="edit">
+ 
+ <apex:pageBlockButtons location="top">
+     <apex:commandButton value="Save" action="{!Save}"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     <apex:commandButton value="Cancel" action="{!Cancel}"/>
+ </apex:pageBlockButtons>
+ 
+ <apex:pageBlockSection >
+ </apex:pageBlockSection>
+ 
+ <apex:pageBlockSection title="Note Information">
+ 
+     <table style="width:450px">
+            
+            <tr>
+                  <td><apex:inputField value="{!Task.Subject}" label="Subject" required="true"/></td> 
+            </tr>
+            <tr>    
+                    <td><apex:inputField value="{!Task.Description}" styleClass="myClass"/></td>
+            </tr>
+     </table>
+
+ </apex:pageBlockSection>
+</apex:pageBlock>
+
+   
+</apex:form>
+</apex:page>

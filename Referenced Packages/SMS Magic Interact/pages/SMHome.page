@@ -1,0 +1,183 @@
+<apex:page controller="smagicinteract.SMHomeController" tabStyle="SM_Home__tab" >
+    
+<apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+<apex:includeScript value="{!$Resource.smagicinteract__BulkSMSJS}"/>
+<apex:includeScript value="{!$Resource.smagicinteract__jquery}" />
+
+<script>
+
+   $(document).ready(function(){    
+   updatemeter();
+   });
+       
+    function updatemeter() { 
+
+     var stepComplete = document.getElementById('{!$Component.stepcomplete}').innerHTML;              
+     if( stepComplete == 6 ) { 
+       document.getElementById('progressbar-container').style.visibility = "hidden" ; 
+     }  
+     else {                                   
+       document.getElementById('stepinfotext').innerHTML = stepComplete +  ' out of 6 ' ;
+       var complete = (stepComplete/6)*150 ;
+       document.getElementById('iprogressbar').style.width = complete + 'px'  ;                
+     }              
+    }
+                  
+</script>
+
+<style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #000000;
+            z-index: 9999;
+            padding:10px;
+            position: absolute;
+            width: 350px;
+            left:40%;
+            top:250px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+
+        #progressbar {
+            background-color: #fff; 
+            border: solid 1px grey;
+            padding: 0px;
+            width:150px;    
+        }
+        
+        #iprogressbar {
+            background-color: #2AABAB ;
+            width: 00px; /* Adjust with JavaScript */
+            height: 15px;   
+        }    
+
+</style>
+
+<c:Expired_Message_Component isPanelVisible="{!showExpiredMessage}"/>
+<c:subscriptionChangeMessage showPanel="{!showSubscriptionChangeMessage}" />
+
+<apex:outputPanel rendered="{!isVisible}" >
+ 
+<apex:outputtext value="{!stepComplete}" id="stepcomplete"   style="display:none"   /> 
+    
+<apex:sectionHeader title="SMS Magic - {!$User.FirstName} {!$User.LastName}" subtitle="Dashboard"/>
+ 
+       <div id="progressbar-container" >
+        <div id="progressbar" style="float:right;width:150px">
+            <div id="iprogressbar"></div>
+        </div>
+        <span style="float:right;margin-right:20px;vertical-align:middle;"> You have completed <span id="stepinfotext">0 out of 6</span> Steps</span>&nbsp;&nbsp; 
+        <div style="clear:both;"></div>
+       </div><br/> 
+
+    
+<apex:form >
+<apex:pageBlock title="SMS Magic"  helpTitle="Help For this Page?" helpUrl="{!helpLink}">
+<apex:pageMessages escape="false"/>
+
+<apex:outputPanel styleClass="popupBackground"  rendered="{!isConfigurationDone}"/>
+<apex:outputPanel styleClass="custPopup" layout="block" rendered="{!isConfigurationDone}"  >
+<div id="popupMessageHeader" style="width:100%; height:10%; background-color:#8BBEC1;">
+       <div title="" style="color:white; text-align:left; font-family:sans-serif; font-weight:bold; vertical-align: middle; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;"> Configure SMS Magic  </div> 
+</div> 
+       <br /><br />
+       <apex:outputPanel style="font-size:15px;">
+You have not done mandatory Configuration . Please get it done if you want to use SMS Magic. <br/><br/><br/><br/>
+       </apex:outputPanel>
+       <apex:outputPanel style="margin-left:40%">
+                <apex:commandButton title="OK" value="  OK  " action="{!openSetUpWizard}"/>
+       </apex:outputPanel>
+</apex:outputPanel>
+
+<apex:pageBlockButtons location="top" rendered="{!isRegistered}">
+<apex:commandButton value="New SMS" rendered="{!isRegistered}" onclick="redirectTo('/apex/NewSMS','/apex/SMHome');return false;" title="New SMS" />
+<apex:commandButton value="New SMS Template"  rendered="{!isRegistered}" onclick="redirectTo('/apex/NewSMSTemplate','/apex/SMHome');return false;" title="New SMS Template" />
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Registration" columns="2" rendered="{!showRegistration}">
+<apex:outputText value="For registration click on register button" />
+<apex:actionFunction name="executeWS" action="{!executeWS}"></apex:actionFunction>
+<apex:commandButton action="{!manualRegister}" value="Register" onComplete="executeWS();"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="API key Configuration" columns="1" rendered="{!showApiKeyConfiguration}">
+<apex:outputLabel value="API Key" for="apiKey"/>
+<apex:inputText value="{!apiKey}" id="apiKey" maxlength="256"/>
+<apex:commandButton value="Save" action="{!saveApiKey}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="SMS Magic Information" columns="2">
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="AccountId" for="accountId"/>
+<apex:outputText value="{!accountId}"  id="accountId"/>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem rendered="{!IF(usingThirdPartyPipe, false, true)}">
+<apex:outputLabel value="Remaining Credits" for="availableCredits"   />
+<apex:outputText value=""  id="availableCredits">
+{!availableCredits}   
+&nbsp;&nbsp;&nbsp;<apex:outputLink target="_blank" value="https://sms-magic.in/pricing/topup" style="color:red;">Click to buy more credits
+</apex:outputLink>
+</apex:outputText>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="Package Type" for="pkgType"   />
+<apex:outputText value=""  id="pkgType">
+{!pkgType}   
+</apex:outputText>
+</apex:pageBlockSectionItem>
+
+<apex:pageBlockSectionItem >
+</apex:pageBlockSectionItem>
+
+
+</apex:pageBlockSection>
+
+
+<apex:pageBlockSection title="Recent SMS" columns="1"  rendered="{!isRegistered}">
+    <apex:pageBlockTable value="{!recentSMS}" var="sms" columnsWidth="25%,25%,25%,25%" width="100%">
+        <apex:column value="{!sms.smagicinteract__Name__c}" headerValue="Name" width="20%" title="{!sms.smagicinteract__Name__c}"/>
+        <apex:column value="{!sms.smagicinteract__PhoneNumber__c}" headerValue="Mobile" width="20%" title="{!sms.smagicinteract__PhoneNumber__c}"/>
+        <apex:column value="{!sms.smagicinteract__SMSText__c}" headerValue="Text" width="40%" style="max-width:250px; overflow:hidden;" title="{!sms.smagicinteract__SMSText__c}"/>
+        <apex:column value="{!sms.CreatedDate}" headerValue="CreatedOn" width="20%" title="{!sms.CreatedDate}"/>
+    </apex:pageBlockTable>
+</apex:pageBlockSection>
+
+
+<apex:pageBlockSection title="Recent Inbound SMS" columns="1"  rendered="{!isRegistered}">
+    <apex:pageBlockTable value="{!recentInboundSMS}" var="sms" columnsWidth="25%,25%,25%,25%" width="100%">
+        <apex:column value="{!sms.smagicinteract__Inbound_Number__c}" headerValue="Inbound Number" width="20%" title="{!sms.smagicinteract__Inbound_Number__c}"/>        
+        <apex:column value="{!sms.smagicinteract__Mobile_Number__c}" headerValue="Mobile" width="20%" title="{!sms.smagicinteract__Mobile_Number__c}"/>
+        <apex:column value="{!sms.smagicinteract__SMS_Text__c}" headerValue="Text" width="40%" style="max-width:250px; overflow:hidden;" title="{!sms.smagicinteract__SMS_Text__c}"/>
+        <apex:column value="{!sms.CreatedDate}" headerValue="CreatedOn" width="20%" title="{!sms.CreatedDate}"/>
+    </apex:pageBlockTable>
+</apex:pageBlockSection>
+
+
+</apex:pageBlock>
+</apex:form>
+
+</apex:outputPanel>
+
+</apex:page>

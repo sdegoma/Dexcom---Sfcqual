@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dashboard xmlns="http://soap.sforce.com/2006/04/metadata">
+    <backgroundEndColor>#FFFFFF</backgroundEndColor>
+    <backgroundFadeDirection>Diagonal</backgroundFadeDirection>
+    <backgroundStartColor>#FFFFFF</backgroundStartColor>
+    <dashboardType>SpecifiedUser</dashboardType>
+    <leftSection>
+        <columnSize>Wide</columnSize>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartAxisRange>Auto</chartAxisRange>
+            <chartSummary>
+                <axisBinding>y</axisBinding>
+                <column>RowCount</column>
+            </chartSummary>
+            <componentType>BarStacked</componentType>
+            <displayUnits>Auto</displayUnits>
+            <drillEnabled>false</drillEnabled>
+            <drillToDetailEnabled>false</drillToDetailEnabled>
+            <enableHover>false</enableHover>
+            <expandOthers>false</expandOthers>
+            <footer>Last 7 Days</footer>
+            <groupingColumn>ASSIGNED</groupingColumn>
+            <groupingColumn>Activity.Call_Disposition__c</groupingColumn>
+            <header>Call Disposition by Rep</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>RingDNA_Reports/Call_Disposition_by_Rep</report>
+            <showPercentage>false</showPercentage>
+            <showValues>false</showValues>
+            <sortBy>RowLabelAscending</sortBy>
+            <useReportChart>false</useReportChart>
+        </components>
+        <components>
+            <autoselectColumnsFromReport>true</autoselectColumnsFromReport>
+            <chartAxisRange>Auto</chartAxisRange>
+            <componentType>Pie</componentType>
+            <displayUnits>Auto</displayUnits>
+            <drillEnabled>false</drillEnabled>
+            <drillToDetailEnabled>false</drillToDetailEnabled>
+            <enableHover>false</enableHover>
+            <expandOthers>false</expandOthers>
+            <footer>Last 7 Days</footer>
+            <header>Total Calls Inbound vs. Outbound</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>RingDNA_Reports/Total_Calls_Inbound_vs_Outbound</report>
+            <showPercentage>false</showPercentage>
+            <showValues>true</showValues>
+            <sortBy>RowLabelAscending</sortBy>
+            <useReportChart>false</useReportChart>
+        </components>
+        <components>
+            <autoselectColumnsFromReport>true</autoselectColumnsFromReport>
+            <componentType>Gauge</componentType>
+            <displayUnits>Auto</displayUnits>
+            <footer>Last 30 Days</footer>
+            <gaugeMax>5.0</gaugeMax>
+            <gaugeMin>0.0</gaugeMin>
+            <header>Avg Call Rating</header>
+            <indicatorBreakpoint1>2.0</indicatorBreakpoint1>
+            <indicatorBreakpoint2>4.0</indicatorBreakpoint2>
+            <indicatorHighColor>#54C254</indicatorHighColor>
+            <indicatorLowColor>#C25454</indicatorLowColor>
+            <indicatorMiddleColor>#C2C254</indicatorMiddleColor>
+            <report>RingDNA_Reports/Avg_Call_Rating</report>
+            <showPercentage>false</showPercentage>
+            <showTotal>true</showTotal>
+            <showValues>false</showValues>
+        </components>
+    </leftSection>
+    <middleSection>
+        <columnSize>Wide</columnSize>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartAxisRange>Auto</chartAxisRange>
+            <chartSummary>
+                <axisBinding>y</axisBinding>
+                <column>RowCount</column>
+            </chartSummary>
+            <componentType>ColumnGrouped</componentType>
+            <displayUnits>Auto</displayUnits>
+            <drillEnabled>false</drillEnabled>
+            <drillToDetailEnabled>false</drillToDetailEnabled>
+            <enableHover>false</enableHover>
+            <expandOthers>false</expandOthers>
+            <footer>Last 7 Days</footer>
+            <groupingColumn>ASSIGNED</groupingColumn>
+            <groupingColumn>Activity.Call_Direction__c</groupingColumn>
+            <header>Number of Calls by Rep</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>RingDNA_Reports/Call_Report_by_Direction_by_Rep</report>
+            <showPercentage>false</showPercentage>
+            <showValues>false</showValues>
+            <sortBy>RowLabelAscending</sortBy>
+            <useReportChart>false</useReportChart>
+        </components>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartAxisRange>Auto</chartAxisRange>
+            <chartSummary>
+                <aggregate>Average</aggregate>
+                <axisBinding>y</axisBinding>
+                <column>Activity.Call_Duration_min__c</column>
+            </chartSummary>
+            <componentType>Column</componentType>
+            <displayUnits>Auto</displayUnits>
+            <drillEnabled>false</drillEnabled>
+            <drillToDetailEnabled>false</drillToDetailEnabled>
+            <enableHover>false</enableHover>
+            <expandOthers>false</expandOthers>
+            <footer>Last 7 Days</footer>
+            <groupingColumn>ASSIGNED</groupingColumn>
+            <header>Avg Call Duration by Rep</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>RingDNA_Reports/Avg_Call_Duration_by_Rep</report>
+            <showPercentage>false</showPercentage>
+            <showValues>false</showValues>
+            <sortBy>RowLabelAscending</sortBy>
+            <useReportChart>false</useReportChart>
+        </components>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartSummary>
+                <axisBinding>y</axisBinding>
+                <column>RowCount</column>
+            </chartSummary>
+            <componentType>Gauge</componentType>
+            <displayUnits>Integer</displayUnits>
+            <footer>Last 7 Days</footer>
+            <gaugeMax>1000.0</gaugeMax>
+            <gaugeMin>0.0</gaugeMin>
+            <header>Total Number of Calls</header>
+            <indicatorBreakpoint1>250.0</indicatorBreakpoint1>
+            <indicatorBreakpoint2>500.0</indicatorBreakpoint2>
+            <indicatorHighColor>#54C254</indicatorHighColor>
+            <indicatorLowColor>#C25454</indicatorLowColor>
+            <indicatorMiddleColor>#C2C254</indicatorMiddleColor>
+            <report>RingDNA_Reports/Number_of_Calls_Last_7_Days</report>
+            <showPercentage>false</showPercentage>
+            <showTotal>true</showTotal>
+            <showValues>false</showValues>
+        </components>
+    </middleSection>
+    <rightSection>
+        <columnSize>Wide</columnSize>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartAxisRange>Auto</chartAxisRange>
+            <chartSummary>
+                <aggregate>Sum</aggregate>
+                <axisBinding>y</axisBinding>
+                <column>Activity.Call_Duration_min__c</column>
+            </chartSummary>
+            <componentType>ColumnStacked</componentType>
+            <displayUnits>Auto</displayUnits>
+            <drillEnabled>false</drillEnabled>
+            <drillToDetailEnabled>false</drillToDetailEnabled>
+            <enableHover>false</enableHover>
+            <expandOthers>false</expandOthers>
+            <footer>Last 7 Days</footer>
+            <groupingColumn>ASSIGNED</groupingColumn>
+            <groupingColumn>Activity.Call_Direction__c</groupingColumn>
+            <header>Talk Time by Rep</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>RingDNA_Reports/Talk_Time_by_Rep</report>
+            <showPercentage>false</showPercentage>
+            <showValues>false</showValues>
+            <sortBy>RowValueDescending</sortBy>
+            <useReportChart>false</useReportChart>
+        </components>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartAxisRange>Auto</chartAxisRange>
+            <chartSummary>
+                <axisBinding>y</axisBinding>
+                <column>RowCount</column>
+            </chartSummary>
+            <componentType>LineGrouped</componentType>
+            <displayUnits>Auto</displayUnits>
+            <drillEnabled>false</drillEnabled>
+            <drillToDetailEnabled>false</drillToDetailEnabled>
+            <enableHover>false</enableHover>
+            <expandOthers>false</expandOthers>
+            <footer>Cumlative Over the Last 7 Days</footer>
+            <groupingColumn>CREATED_DATE</groupingColumn>
+            <groupingColumn>ASSIGNED</groupingColumn>
+            <header>Total Number of Calls by Rep</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>RingDNA_Reports/Number_of_Calls_Last_7_Days</report>
+            <showPercentage>false</showPercentage>
+            <showValues>false</showValues>
+            <sortBy>RowLabelAscending</sortBy>
+            <useReportChart>false</useReportChart>
+        </components>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartAxisRange>Auto</chartAxisRange>
+            <chartSummary>
+                <axisBinding>y</axisBinding>
+                <column>RowCount</column>
+            </chartSummary>
+            <chartSummary>
+                <axisBinding>y2</axisBinding>
+                <column>FORMULA1</column>
+            </chartSummary>
+            <componentType>ColumnLine</componentType>
+            <displayUnits>Auto</displayUnits>
+            <drillEnabled>false</drillEnabled>
+            <drillToDetailEnabled>false</drillToDetailEnabled>
+            <enableHover>false</enableHover>
+            <expandOthers>false</expandOthers>
+            <footer>Based on Contact/Lead Local Time</footer>
+            <groupingColumn>Activity.Call_Hour_Of_Day_Local__c</groupingColumn>
+            <header>Outbound Calls By Hour of Day</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>RingDNA_Reports/Outbound_Call_By_Time_of_Day</report>
+            <showPercentage>false</showPercentage>
+            <showValues>false</showValues>
+            <sortBy>RowLabelAscending</sortBy>
+            <useReportChart>false</useReportChart>
+        </components>
+    </rightSection>
+    <runningUser>cadmin@dexcom.com</runningUser>
+    <textColor>#000000</textColor>
+    <title>RingDNA Sales Dashboard</title>
+    <titleColor>#000000</titleColor>
+    <titleSize>12</titleSize>
+</Dashboard>

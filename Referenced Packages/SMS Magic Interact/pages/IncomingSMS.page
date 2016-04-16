@@ -1,0 +1,22 @@
+<apex:page standardController="smagicinteract__Incoming_SMS__c" tabStyle="smagicinteract__Incoming_SMS__c">
+
+<apex:form >
+<apex:pageBlock id="main" title="Incoming SMS" >
+	<apex:pageBlockSection id="incomingSMSSection" title="Edit Incoming SMS"  columns="1">
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.Name}" style="background:silver;" onfocus="this.blur()"/> 
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.smagicinteract__Mobile_Number__c}" style="background:silver;" onfocus="this.blur()"/> 
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.smagicinteract__Inbound_Number__c}" style="background:silver;" onfocus="this.blur()"/> 
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.smagicinteract__SMS_Text__c}" style="background:silver;" onfocus="this.blur()"/> 
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.smagicinteract__actionTaken__c}" /> 
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.smagicinteract__external_field__c}" style="background:silver;" onfocus="this.blur()"/> 
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.smagicinteract__Contact__c}" /> 
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.smagicinteract__Lead__c}" /> 
+			<apex:inputField value="{!smagicinteract__Incoming_SMS__c.OwnerId}" /> 
+	</apex:pageBlockSection>
+	<apex:pageBlockButtons location="bottom">
+      <apex:commandButton title="Save" value="Save" action="{!save}"/>
+      <apex:commandButton title="Cancel" value="Cancel" action="{!cancel}"/>
+    </apex:pageBlockButtons>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

@@ -1,0 +1,13 @@
+<apex:page >
+<apex:canvasApp applicationName="Sparkler_PRD"
+ height="812px"
+ width="1000px"
+ parameters="
+ {
+  'ts.name': 'FieldSalesCalls/TerritoryTrend?:iid=1',
+  'ts.trustedTicket.host': 'prodbi01.dexcom.com',
+  'ts.trustedTicket.username': 'thall',
+  'ts.filter':'SelectedDistrict={!TEXT($User.District_Name__c)}'
+ }" />
+
+</apex:page>

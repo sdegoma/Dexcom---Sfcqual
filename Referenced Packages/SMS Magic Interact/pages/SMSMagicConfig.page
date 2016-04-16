@@ -1,0 +1,317 @@
+<apex:page controller="smagicinteract.SMSMagicConfigController" tabStyle="SMS_Magic_Settings__tab"  >
+<apex:includeScript value="/soap/ajax/15.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/15.0/apex.js"/>
+<apex:includeScript value="{!$Resource.smagicinteract__BulkSMSJS}"/>
+<apex:includeScript value="{!$Resource.smagicinteract__jquery}" />
+  
+<script >
+
+   $(document).ready(function(){    
+   updatemeter();
+   });
+
+    function collapseSection(blockId){
+    
+        var divDisplayVal =  document.getElementById(blockId).style.display;
+        if(divDisplayVal == "block")
+            document.getElementById(blockId).style.display = "none";
+        if(divDisplayVal == "none")
+            document.getElementById(blockId).style.display = "block";
+    }
+           
+    function updatemeter() { 
+
+     var stepComplete = document.getElementById('{!$Component.stepcomplete}').innerHTML;              
+     if( stepComplete == 6 ) { 
+       document.getElementById('progressbar-container').style.visibility = "hidden" ; 
+     }  
+     else {                                   
+       document.getElementById('stepinfotext').innerHTML = stepComplete +  ' out of 6 ' ;
+       var complete = (stepComplete/6)*150 ;
+       document.getElementById('iprogressbar').style.width = complete + 'px'  ;                
+     }              
+    }
+    
+    function toggle(elmchkbox) {
+        elmchkbox.checked = false;
+    }
+
+    function confirmRest(){
+        var confirmMessage = "It will reset your all security settings.\nAfter refresting this you need to register again to use system.";
+        var confirmResult = confirm(confirmMessage);
+        if(confirmResult == true){
+            refreshFunction();
+        }
+        return confirmResult;
+    }
+    
+</script>
+
+<style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #000000;
+            z-index: 9999;
+            padding:10px;
+            position: absolute;
+            width: 350px;
+            left:40%;
+            top:250px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        #progressbar {
+          background-color: #fff; 
+          border: solid 1px grey;
+          padding: 0px;
+          width:150px;    
+        }
+        
+        #iprogressbar {
+           background-color: #2AABAB ;
+           width: 00px; /* Adjust with JavaScript */
+           height: 15px;   
+        }    
+
+</style>
+
+<c:Expired_Message_Component isPanelVisible="{! NOT(isVisible) }"/>
+ 
+<!-- 
+<apex:outputPanel rendered="{!If(isVisible && Not(isAllowableForPkg1) && showActionOnIncoming ,true,false)}"> 
+ <div style="width:700px;margin:20px auto; text-align:center;line-height:40px;" > 
+        <h1 style="font-size:30px;">Your SMS Magic subscription is Starter. </h1> <br/> 
+        <h5 style="font-size:15px;"> This package does not have privilege to Configure Action on Incoming SMS.    </h5> <br/>            
+  </div>
+</apex:outputPanel> -->
+
+
+<apex:outputPanel rendered="{!isVisible}" > 
+<apex:pageMessages id="pageMsg" escape="false"/><br/>
+<apex:sectionHeader title="SMS Magic - {!$User.FirstName} {!$User.LastName}" subtitle="SMS Magic Configuration" />
+
+<apex:outputtext value="{!stepComplete}" id="stepcomplete"   style="display:none"   /> 
+
+        <div id="progressbar-container" >
+        <div id="progressbar" style="float:right;width:150px">
+            <div id="iprogressbar"></div>
+        </div>
+        <span style="float:right;margin-right:20px;vertical-align:middle;"> You have completed <span id="stepinfotext">0 out of 6</span> Steps</span>&nbsp;&nbsp; 
+        <div style="clear:both;"></div>
+       </div><br/>          
+           
+<apex:pageBlock id="main">
+
+    <apex:pageBlockButtons location="top">
+    <apex:form >
+
+<apex:outputPanel styleClass="popupBackground" rendered="{!isConfigurationDone}" />
+<apex:outputPanel styleClass="custPopup" layout="block" rendered="{!isConfigurationDone}"  >
+    <div id="popupMessageHeader" style="width:100%; height:10%; background-color:#8BBEC1;">
+           <div title="" style="color:white; text-align:left; font-family:sans-serif; font-weight:bold; vertical-align: middle; padding-top: 5px; padding-bottom: 5px; padding-left: 5px;"> Configure SMS Magic  </div> 
+    </div> 
+    <br /><br />
+    <apex:outputPanel style="font-size:15px;">
+            You have not done mandatory Configuration . Please get it done if you want to use SMS Magic. <br/><br/><br/><br/>
+    </apex:outputPanel>
+    <apex:outputPanel style="margin-left:40%">
+            <apex:commandButton title="OK" value="  OK  " action="{!openSetUpWizard}"/>
+    </apex:outputPanel>
+</apex:outputPanel>
+
+        <apex:commandButton title="Basic Settings" value="Basic Settings" immediate="true" onclick="redirectTo('/apex/SMSMagicConfig?show=basicSettings','');return false;" disabled="{! IF(showBasicSettings, true, false)}"/>
+        <apex:commandButton title="Configure Template Type" value="Configure Template Type" immediate="true" onclick="redirectTo('/apex/SMSMagicConfig?show=configureTemplateTypes','');return false;" disabled="{! IF(showTemplateType, true, false)}"/>
+        <apex:commandButton title="Configure Action On Incoming SMS" value="Configure Action On Incoming SMS" immediate="true" onclick="redirectTo('/apex/SMSMagicConfig?show=configureActionOnIncoming','');return false;" disabled="{! IF(showActionOnIncoming, true, false)}"/>
+        <apex:commandButton title="Incoming SMS Settings" value="Incoming SMS Settings" immediate="true" onclick="redirectTo('/apex/SMSMagicConfig?show=incomingSMSSettings','');return false;" disabled="{! IF(showIncomingSettings, true, false)}"/>
+    </apex:form>
+    </apex:pageBlockButtons>
+    </apex:pageBlock>   
+
+    
+    <apex:pageBlock title="Basic Settings" helpTitle="Help For this Page?" helpUrl="/apex/SMSMagicHelp?from=SMSMagicConfig" rendered="{!showBasicSettings}">
+            <apex:form >
+            <apex:pageBlockSection id="section3" title="Set Default Country code" columns="3">
+                <apex:outputPanel rendered="{!IF (isSave,true, false)}">
+                    <apex:selectList size="1"  value="{!countryCode}" multiselect="false"  >
+                        <apex:selectOptions value="{!items}"></apex:selectOptions>
+                    </apex:selectList>
+                    <apex:commandButton value="Save" action="{!saveCountry}" reRender="section3,pageMsg" title="Save Country"/>
+                    <apex:commandButton value="Cancel" action="{!cancelConfiguration}" reRender="section3,pageMsg" title="Cancel"/>
+                </apex:outputPanel>
+                <apex:pageBlockSectionItem rendered="{!IF (isEdit,true, false)}" >
+                    <apex:outputLabel >{!countryName}</apex:outputLabel>
+                    <apex:commandButton value="Edit" action="{!edit}" reRender="section3" title="Edit Country" title="Edit Country"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="section4"  title="API key Configuration - Update your API key" columns="1" rendered="{!hasPermissions}">
+                <apex:pageBlockSectionItem rendered="{!IF (isApiKeyEdit,true, false)}">
+                    <apex:outputText style="font-weight:bold; ">API Key: ****************************** </apex:outputText> 
+                    <apex:commandButton value="Edit" action="{!editApiKey}" reRender="section4" style="left-right:200px;" title="Edit Api Key"/>
+                </apex:pageBlockSectionItem>
+                <apex:outputPanel rendered="{!IF (isApiKeySave,true, false)}">
+                <apex:inputSecret value="{!apiKey}" id="apiKey" maxlength="32" />
+                    <apex:commandButton value="Save" action="{!updateApiKey}" style="left-margin:-20px;" title="Update Api Key"/>
+                    <apex:commandButton value="Cancel" action="{!cancelConfiguration}" reRender="section3,pageMsg" title="Cancel"/>
+                </apex:outputPanel>
+                <apex:pageBlockSectionItem rendered="{!IF (isApiKeyEdit,true, false)}">
+                    <apex:outputText style="font-weight:bold; ">Refresh Your Security Settings: </apex:outputText> 
+                    <apex:commandButton value="Refresh" onclick="confirmRest();" reRender="section4" style="left-right:200px;" title="Refresh Security Settings"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:actionFunction action="{!resetSecuritySettings}" id="refreshFunction" name="refreshFunction"/>
+            </apex:form>
+            
+        
+            <apex:pageBlockSection id="section1" title="Sender Ids" onClick="collapseSection('senderIdList')" rendered="{!isAccessible.SMS_SenderId__c}"/>
+            <div  id="senderIdList" style="display:block;" >
+            
+            <apex:ListViews type="smagicinteract__SMS_SenderId__c" rendered="{!isAccessible.SMS_SenderId__c}"/>    
+            </div> 
+    </apex:pageBlock>
+    
+    <apex:pageBlock title="Configure Template Type" helpTitle="Help For this Page?" helpUrl="/apex/SMSMagicHelp?from=SMSMagicConfig" rendered="{!IF(isAccessible.SMS_Template_Type__c && showTemplateType, true, false)}">
+        <apex:pageBlockSection id="section2" title="Configure Template Type" >
+            <apex:ListViews type="smagicinteract__SMS_Template_Type__c" rendered="{!isAccessible.SMS_Template_Type__c}"/>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    
+    <apex:pageBlock id="actionOnIncoming" title="Configure Action On Incoming SMS" helpTitle="Help For this Page?" helpUrl="/apex/SMSMagicHelp?from=SMSMagicConfig" rendered="{!showActionOnIncoming}">
+        
+        <apex:pageBlockSection id="optoutSection" title="Optout Settings" rendered="{! IF(isAccessible.Optout_Settings__c && isAllowableForPkg1, true, false)}">
+        <apex:ListViews type="smagicinteract__Optout_Settings__c" rendered="{!isAccessible.Optout_Settings__c}" /><br/><br/>
+        </apex:pageBlockSection>
+        
+        <apex:pageBlockSection id="section3" title="Setup Keyword Based Alerts"  rendered="{!isAllowableForPkg1}">
+           
+        <apex:pageBlockSectionItem id="section3item" rendered="{!isAccessible.forward_config__c}">
+            <apex:outputPanel id="listViewPanel"> 
+                <apex:ListViews type="smagicinteract__forward_config__c" rendered="{!IF(isAccessible.forward_config__c && showDisableAlertPanel, true, false)}"/>               
+                <apex:form id="alertform">        
+                    <apex:outputPanel id="enableAlertPanel">
+                        <apex:outputPanel rendered="{!showEnableAlertPanel}"  >        
+                            <apex:pageMessage severity="warning" >Email/SMS alerts are disabled for all users.</apex:pageMessage>       
+                            <apex:inputcheckbox id="echkbx" onclick="toggle(this);enablealert()" > Check here to enable alerts for all users. </apex:inputcheckbox>        
+                        </apex:outputPanel>    
+                    </apex:outputPanel>    
+                    <apex:actionFunction name="enablealert" action="{!enableAlert}" rerender="dchkbx, listViewPanel, disableAlertPanel,enableAlertPanel"  />        
+                    <apex:outputPanel id="disableAlertPanel" >                              
+                        <apex:inputcheckbox id="dchkbx" onclick="toggle(this);disablealert()" rendered="{!showDisableAlertPanel}" > 
+                        Check here to disable alerts for all users. </apex:inputcheckbox>
+                    </apex:outputPanel>        
+                    <apex:actionFunction name="disablealert" action="{!disableAlert}" rerender="echkbx, listViewPanel, disableAlertPanel,enableAlertPanel"  />
+                </apex:form>
+            </apex:outputPanel>
+        </apex:pageBlockSectionItem>    
+       </apex:pageBlockSection>
+       
+                
+        <apex:pageBlockSection id="section6" title="Configure Action on Incoming"  >
+            <apex:outputPanel id="step1" style="color: #4A4A56; padding-top: 5px; padding-bottom: 5px; padding-left: 2px; text-align: right; font-size: 91%; font-weight: bold;">
+                Step 1: Create Lookup field on Incoming SMS object. (<a href="http://screen-magic.com/resources/incoming-sms/incoming-sms-related-list/" target="_blank">Help</a>).
+            </apex:outputPanel><br/>
+            <apex:outputPanel id="step2" style="color: #4A4A56; padding-top: 5px; padding-bottom: 5px; padding-left: 2px; text-align: right; font-size: 91%; font-weight: bold;">
+                Step 2: Create New Lookup Rule. (click "New Incoming Lookup" button) 
+            </apex:outputPanel><br/>
+            
+            <apex:ListViews type="smagicinteract__incoming_lookup_config__c" rendered="{!isAccessible.incoming_lookup_config__c}"/><br/>
+            
+            <apex:outputPanel id="step3b" style="color: #4A4A56; padding-top: 5px; padding-bottom: 5px; padding-left: 2px; text-align: right; font-size: 91%; font-weight: bold;">
+               With above steps, Incoming sms's mobile number will be searched and added to related list of objects configured here.
+            </apex:outputPanel><br/>
+            
+            <apex:outputPanel rendered="{!isAllowableForPkg3}">
+            <apex:outputPanel id="step3" style="color: #4A4A56; padding-top: 5px; padding-bottom: 5px; padding-left: 2px; text-align: right; font-size: 91%; font-weight: bold;">
+                Step 3: Create Action on Incoming SMS.
+            </apex:outputPanel><br/>
+            <apex:outputPanel style="color: #4A4A56; padding-top: 5px; padding-bottom: 5px; padding-left: 2px; text-align: right; font-size: 91%; font-weight: bold;">
+                Using Step3, Lead, Contact, case, task or opportunity will be created using incoming sms.
+            </apex:outputPanel><br/>
+            
+            <apex:ListViews type="smagicinteract__lookup_config__c" rendered="{!isAccessible.lookup_config__c}"/><br/><br/>
+            </apex:outputPanel>
+            
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    
+    <apex:pageBlock id="incomingSMSSettings" title="Incoming SMS Settings" helpTitle="Help For this Page?" helpUrl="/apex/SMSMagicHelp?from=SMSMagicConfig" rendered="{!showIncomingSettings}">
+    
+    <apex:form id="incomingSettingForm">
+    <apex:pageBlockSection id="oauthSection" title="Access to Screen- Magic" columns="1" onclick="collapseSection('oauthSectionDiv');"/>
+        <div id="oauthSectionDiv" style="display:block;">
+            <apex:outputLabel value="Do you want to give access to Screen-Magic? Please Click On Approval Links" for="oauthUrl" />
+            &nbsp;&nbsp;&nbsp;<apex:outputLink id="oauthUrl" value="https://login.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9QDx8IX8nP5Q_eWC6mOvLcDGo.LnV.3ORDmfutVIbnFtiv11oKFAtM8i_EJjwB4SEz9_vIabq5o752Va9&redirect_uri=https%3A//sms-magic.in/customerportal/storeAuthCode/smagicinteract" target="framename">Production </apex:outputLink>
+            |&nbsp;<apex:outputLink id="oauthUrl1" value="https://test.salesforce.com/services/oauth2/authorize?response_type=code&client_id=3MVG9QDx8IX8nP5Q_eWC6mOvLcDGo.LnV.3ORDmfutVIbnFtiv11oKFAtM8i_EJjwB4SEz9_vIabq5o752Va9&redirect_uri=https%3A//sms-magic.in/customerportal/storeAuthCode/smagicinteract" target="_blank">Sandbox </apex:outputLink>
+        </div>
+     <apex:pageBlockSection id="section4" title="SMS Pull Auth Access" columns="1" onclick="collapseSection('{!$Component.pullAuthSection}');"/>
+        <apex:outputPanel id="pullAuthSection" style="display:block;">
+            <table id="buttonsTable">
+            <tr>
+            <td>
+                <apex:outputLabel value="Login" for="login"/>
+            </td>
+            <td>
+                <apex:outputPanel id="requiredLoginId" styleClass="requiredInput" layout="block">
+                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                <apex:inputText value="{!login}" id="login" disabled="{!IF (isAuthSave,true, false)}" maxlength="50" />
+                </apex:outputPanel>
+            </td>
+            </tr>
+            <tr>
+                <td>
+                <apex:outputLabel value="Password" for="password"/>
+                </td>
+                <!--  <apex:inputText value="{!password}" required="true"  id="password" disabled="{!IF (isAuthSave,true, false)}"/>-->
+                <td>
+                <apex:outputPanel id="requiredPassId" styleClass="requiredInput" layout="block">
+                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                <apex:inputSecret value="{!password}" id="password" redisplay="true" disabled="{!IF (isAuthSave,true, false)}" maxlength="50" />
+                </apex:outputPanel>
+                </td>
+            </tr>
+            <tr>
+                <td>        
+                <apex:outputLabel value="Security Token" for="secToken"/>
+                </td>
+                <td>
+                <apex:outputPanel id="requiredTokenId"  styleClass="requiredInput" layout="block">
+                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                <apex:inputSecret value="{!securityToken}" id="secToken" redisplay="true" disabled="{!IF (isAuthSave,true, false)}" maxlength="50" />
+                </apex:outputPanel>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                <table>
+                    <tr>
+                        <td>
+                            <apex:commandButton value="Save" action="{!saveAuthAccess}" rendered="{!IF (isAuthSave,false, true)}" title="Save"/>
+                        </td>
+                        <td>
+                            <apex:commandButton value="Edit" action="{!editAuthAccess}" rendered="{!IF (isAuthSave,true, false)}" title="Edit"/>        
+                        </td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        
+
+    </apex:form>
+    </apex:pageBlock>
+
+</apex:outputPanel>
+</apex:page>

@@ -1,0 +1,59 @@
+<apex:page standardController="Lead" title="Lead Edit" showHeader="true" sidebar="true" extensions="LeadPageController">  
+<Apex:form >
+ <apex:pageBlock title="Lead Edit" > 
+  
+ <script type="text/javascript"> function hideColumn(a) 
+ ` {` if(a.value != 'Materials') `
+  {` ` j$ = jQuery.noConflict();` j$(".hideSite").show(); j$(".hidePTN").show(); ` }`
+   ` else` ` {` j$ = jQuery.noConflict(); ` j$(".hideSite").hide(); ` j$(".hidePTN").hide(); } ` }
+</script>
+   <apex:pageBlockSection columns="2" collapsible="true" title="Lead Information" >
+          <apex:inputField value="{!Lead.firstname}" label="Firstname" required="true"/>
+          <apex:inputField value="{!Lead.Lastname}" label="Lastname" required="true"/>
+          <apex:inputField value="{!Lead.Email}" label="Email" />
+          <apex:inputField value="{!Lead.Phone}" label="Phone" required="true"/>
+          <apex:inputField value="{!Lead.Birthdate__c}" label="Birthdate" />
+          <apex:inputField value="{!Lead.Street}" label="Street" />
+          <apex:inputField value="{!Lead.City}" label="City" />
+          <apex:inputField value="{!Lead.State}" label="State" />
+          <apex:inputField value="{!Lead.PostalCode}" label="Zip" />
+  </apex:pageBlockSection>
+  <apex:pageBlockSection columns="2" collapsible="true" title="Diabetes Therapy" >
+          <apex:inputField value="{!Lead.Patient_Diabetes_Type__c   }" label="Patient Diabetes Type" />
+          <apex:inputField value="{!Lead.Diabetes_Therapy__c}" label="Diabetes Therapy" />
+          <apex:inputField value="{!Lead.Interest_Level__c}" label="Interest Level" />
+          <apex:inputField value="{!Lead.Insurance_Type__c}" label="Insurance Type" />
+  </apex:pageBlockSection>   
+  <apex:pageBlockSection columns="2" collapsible="true" title="Insurance Information" >
+          <apex:inputField value="{!Lead.Insurance_Provider__c}" label="Insurance Provider" />
+          <apex:inputField value="{!Lead.Insurance_Member_ID__c}" label="Insurance Member ID" />
+          <apex:inputField value="{!Lead.Insurance_Group_Number__c}" label="Insurance Group Number" />
+          <apex:inputField value="{!Lead.Relationship_to_PH__c}" label="Relationship to PH" />
+          <apex:inputField value="{!Lead.Policy_Holder_First_Name__c}" label="Policy Holder First Name" />
+          <apex:inputField value="{!Lead.Policy_Holder_Last_Name__c }" label="Policy Holder Last Name" />
+          <apex:inputField value="{!Lead.Policy_Holder_DOB__c}" label="Policy Holder DOB"  />
+          <apex:inputField value="{!Lead.Policy_Holder_Gender__c}" label="Policy Holder Gender" />
+  </apex:pageBlockSection>     
+          
+  <apex:pageBlockSection columns="2" collapsible="true" title="Doctor Information" >
+          <apex:inputField value="{!Lead.Doctor_Name__c}" label="Doctor Name"  required="true"    />
+          <apex:inputField value="{!Lead.Doctor_City__c }" label="Doctor City"  required="true"   />
+          <apex:inputField value="{!Lead.Doctor_State__c}" label="Doctor State" />
+          <apex:inputField value="{!Lead.Doctor_Zip__c}" label="Doctor Zip" required="true" />
+          <apex:inputField value="{!Lead.Doctor_Phone__c}" label="Doctor Phone" required="true"/ >
+  </apex:pageBlockSection>     
+ 
+   <apex:outputPanel rendered="{!AND(IF($Profile.Name== 'System Administrator',true,false))}">
+    <apex:pageBlockSection columns="2" collapsible="true" title="Admin" >  
+        <apex:outputField value="{!Lead.LeadSource}" label="LeadSource"   />
+          <apex:outputField value="{!Lead.Dex_Campaign__c}" label="Campaign "  />
+    </apex:pageBlockSection>     
+    </apex:outputPanel>
+  
+      <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!save}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>                
+            </apex:pageBlockButtons>
+    </apex:pageBlock>
+</Apex:form>
+</apex:page>

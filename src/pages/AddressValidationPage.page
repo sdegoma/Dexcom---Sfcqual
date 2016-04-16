@@ -1,0 +1,307 @@
+<apex:page standardController="Address__c" showHeader="false" sidebar="false">
+
+<apex:remoteObjects jsNamespace="AddressInfo">
+    <apex:remoteObjectModel name="Address__c" fields="Id,Street_Address_1__c,Street_Address_2__c,Zip_Postal_Code__c,County__c,City__c,State__c,Address_Type__c,Address_Verified__c,Account__c,Primary_Flag__c"/>
+</apex:remoteObjects>
+<!-- <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/> -->
+<!-- <apex:includeScript value="https://d79i1fxsrar4t.cloudfront.net/jquery.liveaddress/2.4/jquery.liveaddress.min.js" /> -->
+<apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"/>
+<apex:includeScript value="https://d79i1fxsrar4t.cloudfront.net/jquery.liveaddress/2.8/jquery.liveaddress.min.js" />
+
+<script type="text/javascript">
+// Instantiate Smarty Streets
+var liveaddress = $.LiveAddress({key:'2647722111735614',
+                                debug: true,
+                                autoVerify: true,
+                                addresses: [{
+                                            id: 'ShippingAddressFields',
+                                            street: '#street1',
+                                            street2: '#street2',
+                                            city: '#city',
+                                            state: '#state',
+                                            zipcode: '#zip',
+                                        }]
+                                });
+
+// Toggle override Address fields
+function overrideAddress(){
+    var override = $('#override').prop('checked');
+    toggleSS(override);
+    if(override){
+        liveaddress.deactivate('ShippingAddressFields');
+        $('#city').prop('disabled', false);
+        $('#state').prop('disabled', false);
+        $('#zip').prop('disabled', false);
+        $('#valid').prop('checked', false);
+        $('#street1').focus();
+    }
+    else{
+        resetFields();
+        liveaddress.activate('ShippingAddressFields');
+        $('#city').prop('disabled', true);
+        $('#state').prop('disabled', true);
+        $('#zip').prop('disabled', true);
+        $('#street1').focus();
+    }
+}
+
+// Reset all Address fields
+function resetFields(){
+    $('#street1').val('');
+    $('#street2').val('');
+    $('#city').val('');
+    $('#state').val('');
+    $('#zip').val('');
+    $('#coname').val('');
+    $('#valid').prop('checked', false);
+    $('#override').prop('checked', false);
+}
+
+// Clear all Address fields
+function clearFields(){
+    var valid = $('#valid').prop('checked');
+    if(valid){
+        $('#street2').val('');
+        $('#city').val('');
+        $('#state').val('');
+        $('#zip').val('');
+        $('#coname').val('');
+        $('#valid').prop('checked', false);
+    }
+}
+
+// Toggle Smarty Streets elements
+function toggleSS(param){
+    var ss = document.getElementsByClassName('smarty-ui');
+    for (var i = 0; i < ss.length; ++i){
+        if(param){
+            ss[i].style.display = 'none';
+        }
+        else{
+            ss[i].style.display = 'block';
+        }
+    }
+}
+
+// Save Address Logic
+function submitAddress(){
+    var valid = $('#valid').prop('checked');
+    var override = $('#override').prop('checked');
+    
+    var data = {};
+    var confirmMsg = '';
+    // Address is validated by Smarty Streets
+    
+    if(valid){
+        data = {
+                Street_Address_1__c: $('#street1').val(),
+                Street_Address_2__c: $('#street2').val(),
+                City__c: $('#city').val(),
+                State__c: $('#state').val(),
+                Zip_Postal_Code__c: $('#zip').val(),
+                Address_Verified__c: 'Yes',
+                Account__c : $('#accountId').val(),
+                Primary_Flag__c : $('#primary').is(':checked'),
+                County__c : $('#coname').val(),
+                Address_Type__c : $('[id$=addressType]').val()};
+    }
+
+    // Address is overriden
+    if(override){
+        data = {
+                Street_Address_1__c: $('#street1').val(),
+                Street_Address_2__c: $('#street2').val(),
+                City__c: $('#city').val(),
+                State__c: $('#state').val(),
+                Zip_Postal_Code__c: $('#zip').val(),
+                Address_Verified__c: 'No',
+                Account__c : $('#accountId').val(),
+                Primary_Flag__c : $('#primary').is(':checked'),
+                County__c : $('#coname').val(),
+                Address_Type__c : $('[id$=addressType]').val()};
+    }
+    
+    var second = getUrlVars()["id"];
+    var record = new AddressInfo.Address__c(data);
+    if(second != undefined){
+        record.set('Id', '{!Address__c.Id}');
+        record.update(function(err, records){
+                    if (err){
+                        alert(err);
+                    }
+                    else{
+                        setTimeout(function() {window.open('/' + $('#accountId').val(),'_parent');}, 500);
+                    }
+                    });
+    }else{
+        record.create(function(err, records){
+                        if (err){
+                            alert(err);
+                        }
+                        else{
+                            setTimeout(function() {window.open('/' + $('#accountId').val(),'_parent');}, 500);
+                        }
+                        }); 
+    }
+    
+}
+
+function cancel(){
+    window.open('/' + $('#accountId').val(),'_parent');
+}
+
+// Lock Smarty Streets fields after choosing result
+function lockSSfields(){
+    $('#city').prop('disabled', true);
+    $('#state').prop('disabled', true);
+    $('#zip').prop('disabled', true);
+    $('#coname').prop('disabled', true);
+}
+
+// Display the override section to the user
+function displayOverride(param){
+    if(param == 'true'){
+        document.getElementById('overrideTR').style.visibility = 'visible';
+    }
+}
+
+// Prepopulate fields from Salesforce Address
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    vars[key] = value;
+    });
+    return vars;
+}
+
+function initializeSSfields(){
+    var second = getUrlVars()["id"];
+    
+    if(second != undefined){
+        var thisAddress = new AddressInfo.Address__c();
+        thisAddress.retrieve({where: {Id: {eq: '{!Address__c.Id}'}}},
+                             function(err, records){
+                                if(err){
+                                    alert(err);
+                                }
+                                else{
+                                    $('#street1').val(records[0].get('Street_Address_1__c'));
+                                    $('#street2').val(records[0].get('Street_Address_2__c'));
+                                    $('#city').val(records[0].get('City__c'))
+                                    $('#state').val(records[0].get('State__c'));
+                                    $('#coname').val(records[0].get('County__c'));
+                                    $('#zip').val(records[0].get('Zip_Postal_Code__c'));
+                                    $('#accountId').val(records[0].get('Account__c'));
+                                    $('#addressType').val(records[0].get('Address_Type__c'));
+                                    
+                                    var prim = records[0].get('Primary_Flag__c');
+                                    var valid = records[0].get('Address_Verified__c');
+
+                                    if(prim == true){
+                                        $('#primary').prop('checked', true);
+                                    }else{
+                                        $('#primary').prop('checked', false);
+                                    }
+                                    
+                                    if(valid == 'Yes'){
+                                        $('#valid').prop('checked', true);
+                                    }
+                                    else{
+                                        $('#valid').prop('checked', false);
+                                        $('#override').prop('checked', true);   //when loading a saved address that was not valid/verified
+                                    }
+                                }
+                            });
+    }else{
+        var first = getUrlVars()["accountId"];
+        $('#accountId').val(first);
+        $('#primary').prop('checked', true);
+    }  
+    displayOverride('{!$ObjectType.Address__c.fields.Address_Override__c.Updateable}');  
+        $('[id$=addressType]').find(':first-child').remove();
+}
+</script>
+<form>
+    <apex:form >
+    <center>
+    <table>
+        <tr>
+            <td colspan="2">
+                <i>Enter a partial address then select a match. Click Save or Cancel when done.</i>
+            </td>
+        </tr>
+        <tr>
+            <td>Address 1:</td>
+            <td><input type="text" id="street1" onkeydown="clearFields()" size="35"/></td>
+        </tr>
+        <tr>
+            <td>Address 2:</td>
+            <td><input type="text" id="street2" size="35"/></td>
+        </tr>
+        <tr>
+            <td>City:</td>
+            <td><input type="text" id="city" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td>State:</td>
+            <td><input type="text" id="state" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td>Zip:</td>
+            <td><input type="text" id="zip" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td>County:</td>
+            <td><input type="text" id="coname" disabled="true"/></td>
+        </tr>
+        <tr>
+            <td>Address Type:</td>
+            <td>
+                <apex:inputField value="{!Address__c.Address_Type__c}" id="addressType"></apex:inputField>
+            </td>
+        </tr>
+        <tr>
+            <td>Primary:</td>
+            <td>
+                <input type="checkbox" id="primary"  />
+            </td> 
+        </tr>
+        <tr>
+            <td>Valid:</td>
+            <td><input type="checkbox" id="valid" disabled="true"/></td>
+        </tr>
+        <tr id="overrideTR" style="visibility: hidden;">
+            <td>Override:</td>
+            <td><input type="checkbox" id="override" onchange="overrideAddress()" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <input type="button" value="Save" onclick="submitAddress()"/>
+                <input type="button" value="Cancel" onclick="cancel()"/>
+            </td>
+        </tr>
+        <tr style="visibility:hidden;">
+            <td><span id="accountId"></span></td>
+        </tr>
+    </table>
+    </center>
+    </apex:form>
+</form>
+<script type="text/javascript">
+// Logic to set other fields based on metadata
+liveaddress.on("Completed", function(event, data, previousHandler)
+{
+    previousHandler(event, data);
+    if(data.response.isValid()){
+        coname = data.response.chosen.metadata.county_name;
+        $('#coname').val(coname);
+        $('#valid').prop('checked', true);
+    }
+    // Lock other fields
+    lockSSfields();
+});
+
+// Initialize field values
+initializeSSfields(); 
+</script>
+</apex:page>

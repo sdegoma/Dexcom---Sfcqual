@@ -1,0 +1,11 @@
+<apex:page standardController="Opportunity">
+	<script>
+		console.log('---------- ' + "{!$User.Email}");
+		if("{!$User.Email}" == 'silvino.degoma@cloudsherpas.com'){
+			window.parent.location.href = '/apex/OpportunityPreview?id={!Opportunity.Id}';
+		}else{
+			alert('You do not have access to the page yet');
+			window.parent.location.href = '/{!Opportunity.Id}';
+		}
+	</script>
+</apex:page>
